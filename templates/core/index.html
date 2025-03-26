@@ -30,6 +30,8 @@
   <!-- Template Main CSS File -->
   <link href="{% static 'css/style.css' %}" rel="stylesheet">
 
+  
+
 </head>
 
 <body>
@@ -90,77 +92,41 @@
     {% endif %}
 
 
-    <!-- ======= Counts Section ======= -->
-    <section id="counts" class="counts">
-      <div class="container">
+    
 
-        <div class="row counters">
 
-          <div class="col-lg-3 col-6 text-center">
-            <span data-purecounter-start="0" data-purecounter-end="232" data-purecounter-duration="1" class="purecounter"></span>
-            <p>Clients</p>
+  <section id="about" class="why-us">
+    <div class="container">
+      <div class="container py-5">
+        <div class="row row-cols-1 row-cols-md-3 g-4">
+          {% for product in products %}
+          <div class="col">
+            <!-- Wrap the entire card in an anchor tag to make it clickable -->
+            <a href="{% url 'product_desc' product.pk %}" class="text-decoration-none">
+              <div class="card shadow-lg rounded-3 overflow-hidden h-100">
+                <!-- Image with dynamic height to fit the card -->
+                <img src="{{ product.img.url }}" alt="Product image" class="card-img-top" style="height: 250px; object-fit: cover;"/>
+    
+                <!-- Product Name and Description -->
+                <div class="card-body d-flex flex-column">
+                  <h5 class="card-title text-primary mb-2">{{ product.name }}</h5>
+                  <p class="card-text text-muted mb-3" style="overflow: hidden; display: -webkit-box; -webkit-line-clamp: 3; -webkit-box-orient: vertical; text-overflow: ellipsis;">
+                    {{ product.desc }}
+                  </p>
+                  <ul class="list-unstyled">
+                    <li><b>Category:</b> {{ product.category.category_name }}</li>
+                    <li><b>Price:</b> <span class="text-success">{{ product.price }}</span></li>
+                  </ul>
+                </div>
+              </div>
+            </a>
           </div>
-
-          <div class="col-lg-3 col-6 text-center">
-            <span data-purecounter-start="0" data-purecounter-end="521" data-purecounter-duration="1" class="purecounter"></span>
-            <p>Projects</p>
-          </div>
-
-          <div class="col-lg-3 col-6 text-center">
-            <span data-purecounter-start="0" data-purecounter-end="1463" data-purecounter-duration="1" class="purecounter"></span>
-            <p>Hours Of Support</p>
-          </div>
-
-          <div class="col-lg-3 col-6 text-center">
-            <span data-purecounter-start="0" data-purecounter-end="15" data-purecounter-duration="1" class="purecounter"></span>
-            <p>Hard Workers</p>
-          </div>
-
-        </div>
-
-      </div>
-    </section>
-
-
-    <section id="about" class="why-us">
-  <div class="container">
-
-    <div class="row">
-      
-<div class="container">
-  <div class="row row-cols-1 row-cols-md-3 g-4">
-
-    {% for product in products %}
-    <div class="col">
-      <div class="card">
-        <img
-          src="{{product.img.url}}"
-          class="card-img-top"
-          alt="..."
-        />
-        <div class="card-body">
-          <h4 class="card-title">{{product.name}}</h4>
-        </div>
-        <ul class="list-group list-group-flush">
-          <li class="list-group-item"><b>Category</b> : {{product.category.category_name}}</li>
-          <li class="list-group-item"><b>Price</b>    : {{product.price}}</li>
-        </ul>
-
-        <div class="card-footer" style="background-color:white">
-          <a href="{% url 'product_desc' product.pk %}" class="btn btn-dark">View More</a>
-          
+          {% endfor %}
         </div>
       </div>
     </div>
-  {% endfor %}
-
-
-  </div>
-  </div>
-
-    </div>
-
-  </div>
+    
+  
 </section>
 
 
