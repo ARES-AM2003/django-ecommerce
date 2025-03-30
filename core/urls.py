@@ -13,4 +13,10 @@ urlpatterns = [
     path("payment", views.payment, name="payment"),
     path("handlerequest", views.handlerequest, name="handlerequest"),
     path("render_pdf_view",views.render_pdf_view, name="render_pdf_view"),
+
+    path("manageProducts", views.manageProducts, name="mangeProducts"),
+    path('delete_product/', views.delete_product, name='delete_product'),
+    path('delete_product/<int:pk>/', views.delete_product, name='delete_product'),
+    path('update_products/', views.update_product_list, name='update_product_list'),
+    path('update-product/<int:pk>/', views.update_product_form, name='update_product_form'),
 ]

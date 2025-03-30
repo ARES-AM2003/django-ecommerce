@@ -1,0 +1,41 @@
+{%extends 'core/product_management_temp.html'%} {%block content%}
+
+<main id="main" class="py-5 main-content">
+    <div class="container text-center">
+        <h2 class="mb-4">Manage Products</h2>
+
+        <div class="row justify-content-center">
+            <div class="col-12 col-md-5">
+                <div class="d-grid gap-3">
+                    <div class="row">
+                        <div class="col-6">
+                            <a href="/add_product" class="btn btn-success p-5">
+                                Add Product
+                            </a>
+                        </div>
+                        <div class="col-6">
+                            <a
+                                href="/update_products"
+                                class="btn btn-warning p-5"
+                            >
+                                Update Product
+                            </a>
+                        </div>
+                    </div>
+                    <!-- <div class="row">
+                        <div class="col-12">
+                            <a
+                                href="/delete_product"
+                                class="btn btn-danger p-5"
+                            >
+                                Delete Product
+                            </a>
+                        </div>
+                    </div> -->
+                </div>
+            </div>
+        </div>
+    </div>
+</main>
+
+{%endblock%}

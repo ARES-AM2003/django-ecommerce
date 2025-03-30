@@ -68,9 +68,9 @@ class Order(models.Model):
     order_delivered = models.BooleanField(default=False)
     order_received = models.BooleanField(default=False)
 
-    razorpay_order_id = models.CharField(max_length=500, null=True, blank=True)
-    razorpay_payment_id = models.CharField(max_length=500, null=True, blank=True)
-    razorpay_signature = models.CharField(max_length=500, null=True, blank=True)
+    product_order_id = models.CharField(max_length=500, null=True, blank=True)
+    esewa_payment_id = models.CharField(max_length=500, null=True, blank=True)
+    # razorpay_signature = models.CharField(max_length=500, null=True, blank=True)
 
     def save(self, *args, **kwargs):
         if self.order_id is None and self.datetime_ofpayment and self.id:

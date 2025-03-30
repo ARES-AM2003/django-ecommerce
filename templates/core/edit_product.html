@@ -1,0 +1,214 @@
+{% extends 'core/base.html' %} {% block title %} Edit Product {% endblock %}
+{%block extra_css %}
+<style>
+    .edit-product {
+        background-color: #f4f7fc;
+        padding: 40px 0;
+        font-family: "Roboto", sans-serif;
+    }
+
+    /* Ensure only the form is compact, not the navbar */
+    .edit-product .container {
+        max-width: 700px; /* Make the form container narrower */
+        margin: 0 auto; /* Center it horizontally */
+    }
+
+    .edit-product h2 {
+        font-size: 32px;
+        color: #333;
+        margin-bottom: 30px;
+        font-weight: 700;
+        text-align: center;
+    }
+
+    .form-group {
+        margin-bottom: 25px;
+    }
+
+    .form-group label {
+        font-size: 16px;
+        color: #555;
+        margin-bottom: 10px;
+        font-weight: 600;
+    }
+
+    .form-control {
+        border-radius: 10px;
+        border: 1px solid #ddd;
+        padding: 12px 15px;
+        font-size: 14px;
+        margin-bottom: 12px;
+        background-color: #fff;
+        transition: all 0.3s ease;
+    }
+
+    .form-control:focus {
+        border-color: #4caf50;
+        box-shadow: 0 0 10px rgba(76, 175, 80, 0.3);
+    }
+
+    .form-control::placeholder {
+        color: #bbb;
+    }
+
+    .form-group img {
+        border-radius: 10px;
+        max-width: 100%;
+        margin-top: 15px;
+    }
+
+    .form-group input[type="file"] {
+        padding: 10px 0;
+    }
+
+    .btn-success {
+        background-color: #28a745;
+        border-color: #28a745;
+        font-size: 16px;
+        padding: 12px 25px;
+        font-weight: 600;
+        border-radius: 25px;
+        width: 100%;
+        transition:
+            background-color 0.3s ease,
+            transform 0.3s ease;
+    }
+
+    .btn-success:hover {
+        background-color: #218838;
+        border-color: #1e7e34;
+        transform: translateY(-2px);
+    }
+
+    .btn-success:active {
+        transform: translateY(0);
+    }
+
+    .form-control-file {
+        padding: 8px;
+        border: 1px solid #ddd;
+        border-radius: 10px;
+        margin-bottom: 10px;
+    }
+
+    .form-control-file input[type="file"] {
+        padding: 10px;
+        font-size: 14px;
+    }
+
+    /* Responsive adjustments */
+    @media (max-width: 767px) {
+        .edit-product .container {
+            padding-left: 15px;
+            padding-right: 15px;
+        }
+
+        .btn-success {
+            font-size: 14px;
+            padding: 10px 20px;
+        }
+    }
+</style>
+{% endblock %} {% block content %}
+<!-- ======= Edit Product ======= -->
+<section id="edit-product" class="edit-product mt-5">
+    <div class="container">
+        <h2>Edit Product - {{ product.name }}</h2>
+        <form method="POST" enctype="multipart/form-data">
+            {% csrf_token %}
+            <div class="form-group">
+                <label for="name">Product Name</label>
+                <input
+                    type="text"
+                    class="form-control"
+                    id="name"
+                    name="name"
+                    value="{{ product.name }}"
+                    required
+                    placeholder="Enter product name"
+                />
+            </div>
+            <div class="form-group">
+                <label for="category">Category</label>
+                <select
+                    class="form-control"
+                    id="category"
+                    name="category"
+                    required
+                >
+                    {% for category in categories %}
+                    <option
+                        value="{{ category.id }}"
+                        {%
+                        if
+                        category.id=""
+                        ="product.category.id"
+                        %}selected{%
+                        endif
+                        %}
+                    >
+                        {{ category.category_name }}
+                    </option>
+                    {% endfor %}
+                </select>
+            </div>
+            <div class="form-group">
+                <label for="desc">Description</label>
+                <textarea
+                    class="form-control"
+                    id="desc"
+                    name="desc"
+                    rows="4"
+                    required
+                    placeholder="Enter product description"
+                >
+                    {{ product.desc }}
+                </textarea>
+            </div>
+            <div class="form-group">
+                <label for="price">Price</label>
+                <input
+                    type="number"
+                    class="form-control"
+                    id="price"
+                    name="price"
+                    value="{{ product.price }}"
+                    step="0.01"
+                    required
+                    placeholder="Enter product price"
+                />
+            </div>
+            <div class="form-group">
+                <label for="product_available_count">Stock</label>
+                <input
+                    type="number"
+                    class="form-control"
+                    id="product_available_count"
+                    name="product_available_count"
+                    value="{{ product.product_available_count }}"
+                    required
+                    placeholder="Enter available stock"
+                />
+            </div>
+            <div class="form-group">
+                <label for="img">Product Image</label>
+                <input
+                    type="file"
+                    class="form-control-file"
+                    id="img"
+                    name="img"
+                />
+                <img
+                    src="{{ product.img.url }}"
+                    alt="{{ product.name }}"
+                    class="mt-3"
+                    width="150"
+                />
+            </div>
+            <button type="submit" class="btn btn-success mt-3">
+                Save Changes
+            </button>
+        </form>
+    </div>
+</section>
+{% endblock %}

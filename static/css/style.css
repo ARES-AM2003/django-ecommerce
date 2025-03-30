@@ -97,7 +97,7 @@ h6 {
 #header .logo {
     overflow: hidden;
     padding: 16px 30px 12px 30px;
-    background: #009970;
+    background: #093679;
 }
 
 #header .logo h1 {
@@ -184,11 +184,11 @@ h6 {
 .navbar a:hover,
 .navbar .active,
 .navbar li:hover > a {
-    color: #009970;
+    color: #000a99;
 }
 
 .navbar .getstarted {
-    background: #009970;
+    background: #1124cf;
     padding: 10px 25px;
     margin-left: 30px;
     margin-right: 15px;
@@ -198,7 +198,7 @@ h6 {
 
 .navbar .getstarted:hover {
     color: #fff;
-    background: #00b383;
+    background: #320d96;
 }
 
 .navbar .dropdown ul {
@@ -233,7 +233,7 @@ h6 {
 .navbar .dropdown ul a:hover,
 .navbar .dropdown ul .active:hover,
 .navbar .dropdown ul li:hover > a {
-    color: #009970;
+    color: #0e409c;
 }
 
 .navbar .dropdown:hover > ul {
@@ -325,7 +325,7 @@ h6 {
 .navbar-mobile a:hover,
 .navbar-mobile .active,
 .navbar-mobile li:hover > a {
-    color: #009970;
+    color: #361592;
 }
 
 .navbar-mobile .getstarted {
@@ -359,7 +359,7 @@ h6 {
 .navbar-mobile .dropdown ul a:hover,
 .navbar-mobile .dropdown ul .active:hover,
 .navbar-mobile .dropdown ul li:hover > a {
-    color: #009970;
+    color: #1020ac;
 }
 
 .navbar-mobile .dropdown > .dropdown-active {
@@ -491,7 +491,7 @@ section {
 /*--------------------------------------------------------------
 # Clients
 --------------------------------------------------------------*/
-.clients {
+/* .clients {
     background: #f6f6f7;
     text-align: center;
     padding: 5px 0;
@@ -508,12 +508,12 @@ section {
 .clients img:hover {
     filter: none;
     transform: scale(1.1);
-}
+} */
 
 /*--------------------------------------------------------------
 # About
 --------------------------------------------------------------*/
-.about .content h2 {
+/* .about .content h2 {
     font-weight: 700;
     font-size: 48px;
     line-height: 60px;
@@ -547,12 +547,12 @@ section {
 
 .about .content p:last-child {
     margin-bottom: 0;
-}
+} */
 
 /*--------------------------------------------------------------
 # Counts
 --------------------------------------------------------------*/
-.counts {
+/* .counts {
     background: #009970;
     padding: 40px 0 20px 0;
     color: #fff;
@@ -570,12 +570,12 @@ section {
     font-family: "Raleway", sans-serif;
     font-size: 15px;
     font-weight: 500;
-}
+} */
 
 /*--------------------------------------------------------------
 # Why Us
 --------------------------------------------------------------*/
-.why-us .content {
+/* .why-us .content {
     padding: 30px;
     background: #009970;
     border-radius: 4px;
@@ -639,7 +639,7 @@ section {
 
 .why-us .icon-boxes .icon-box:hover {
     box-shadow: 0px 5px 25px rgba(0, 0, 0, 0.15);
-}
+} */
 
 /*--------------------------------------------------------------
 # Cta
@@ -1443,4 +1443,121 @@ section {
     background: #00805d;
     color: #fff;
     text-decoration: none;
+}
+
+.main-content {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh; /* Ensure it takes the full viewport height */
+    flex-direction: column;
+}
+/* General Form Styling */
+.form-container {
+    max-width: 600px;
+    margin: 0 auto;
+    padding: 20px;
+    background-color: #f9f9f9;
+    border-radius: 8px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+/* Form Labels */
+.form-container .form-label {
+    font-weight: bold;
+    margin-bottom: 8px;
+    font-size: 1rem;
+    color: #333;
+}
+
+/* Input Fields */
+.form-container .form-control {
+    border-radius: 4px;
+    padding: 10px;
+    font-size: 1rem;
+    border: 1px solid #ddd;
+    transition: border-color 0.3s ease;
+}
+
+.form-container .form-control:focus {
+    border-color: #007bff;
+    box-shadow: 0 0 8px rgba(0, 123, 255, 0.25);
+}
+
+/* Textarea */
+.form-container textarea.form-control {
+    height: 150px;
+}
+
+/* File Input */
+.form-container .form-control-file {
+    border: 1px solid #ddd;
+    padding: 10px;
+    border-radius: 4px;
+}
+
+/* Form Button */
+.form-container .btn {
+    width: 100%;
+    padding: 12px;
+    font-size: 1.2rem;
+    background-color: #007bff;
+    color: #fff;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+}
+
+.form-container .btn:hover {
+    background-color: #0056b3;
+}
+
+/* Success / Error States */
+.form-container .is-invalid {
+    border-color: #dc3545;
+}
+
+.form-container .is-valid {
+    border-color: #28a745;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+    .form-container {
+        padding: 15px;
+    }
+
+    .form-container .btn {
+        font-size: 1rem;
+    }
+}
+/* Popup container */
+.message-popup {
+    position: fixed;
+    top: 20px;
+    right: 20px;
+    background-color: #4caf50; /* Green background */
+    color: white;
+    padding: 15px;
+    border-radius: 5px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    z-index: 1000;
+    display: none; /* Hidden by default */
+    font-size: 16px;
+    max-width: 300px;
+    text-align: center;
+    animation: fadeIn 1s ease-out; /* Smooth fade-in animation */
+}
+
+/* Animation for showing the popup */
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(10px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
 }

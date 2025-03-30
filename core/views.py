@@ -178,9 +178,13 @@ def checkout_page(request):
 def payment(request):
     try:
         order = Order.objects.get(user=request.user, ordered=False)
-        address = CheckoutAddress.objects.get(user=request.user)
+        try:
+            address = CheckoutAddress.objects.get(user=request.user)
+            print(address)
+        except:
+            return redirect("checkout_page")
         order_amount = order.get_total_price()
-        order_currency = "INR"
+        order_currency = "NRS"
         order_receipt = order.order_id
         notes = {
             "street_address": address.street_address,
@@ -188,29 +192,22 @@ def payment(request):
             "country": address.country.name,
             "zip": address.zip_code,
         }
-        razorpay_order = razorpay_client.order.create(
-            dict(
-                amount=order_amount * 100,
-                currency=order_currency,
-                receipt=order_receipt,
-                notes=notes,
-                payment_capture="0",
-            )
-        )
-        print(razorpay_order["id"])
-        order.razorpay_order_id = razorpay_order["id"]
-        order.save()
-        print("It should render the summary page")
 
+        # The total amount is passed to eSewa in paise (1 NRS = 100 paise)
+        total_amount_in_paise = int(order_amount * 100)  # Convert amount to paise
+
+        # Send order details to the template
         return render(
             request,
-            "core/paymentsummaryrazorpay.html",
+            "core/paymentsummary.html",  # Update this to your eSewa summary page
             {
                 "order": order,
-                "order_id": razorpay_order["id"],
+                "order_id": order_receipt,  # Use the order receipt (unique identifier)
                 "orderId": order.order_id,
                 "final_price": order_amount,
-                "razorpay_merchant_id": settings.RAZORPAY_ID,
+                "total_amount": total_amount_in_paise,  # Total amount in paise
+                # "success_url": settings.ESEWA_SUCCESS_URL,  # The success URL
+                # "failure_url": settings.ESEWA_FAILURE_URL,  # The failure URL
             },
         )
 
@@ -331,3 +328,71 @@ def handlerequest(request):
 
 def invoice(request):
     return render(request, "invoice/invoice.html")
+
+def manageProducts(request):
+    return render(request, "core/manage_products.html")
+
+def delete_product(request, pk=None):
+    # Check if the request is a POST (form submission)
+    if request.method == "POST":
+        # Get the product object using the provided pk
+        product = get_object_or_404(Product, pk=pk)
+
+        # Delete the product
+        product.delete()
+
+        # Show success message
+        messages.success(request, "Product deleted successfully")
+
+        # Redirect to the manage products page after deletion
+        return redirect('/update_products')  # This will refresh the page with the updated product list
+
+    else:
+        # If not a POST request, just show the product data
+        # product = get_object_or_404(Product, pk=pk)
+        products = Product.objects.all()
+
+        # Render the manage products page with the list of products and the selected product's data
+        return render(request, 'core/delete_products.html', {'products': products})
+
+
+# View to list all products
+def update_product_list(request):
+    products = Product.objects.all()
+    return render(request, 'core/update_product.html', {'products': products})
+
+# View to edit a product
+def update_product_form(request, pk):
+    product = get_object_or_404(Product, pk=pk)
+    categories = Category.objects.all()
+
+    if request.method == 'POST':
+        name = request.POST.get('name')
+        category_id = request.POST.get('category')
+        desc = request.POST.get('desc')
+        price = request.POST.get('price')
+        product_available_count = request.POST.get('product_available_count')
+        img = request.FILES.get('img')
+
+        # Update fields only if new values are provided
+        if name:
+            product.name = name
+        if category_id:
+            product.category = Category.objects.get(id=category_id)
+        if desc:
+            product.desc = desc
+        if price:
+            product.price = float(price)
+        if product_available_count:
+            product.product_available_count = int(product_available_count)
+        if img:
+            product.img = img
+        else:
+            # Keep the current image if no new image is uploaded
+            pass
+
+        product.save()
+        messages.success(request, 'Product updated successfully!')
+        return redirect('update_product_list')  # Redirect after saving
+
+    return render(request, 'core/edit_product.html', {'product': product, 'categories': categories})

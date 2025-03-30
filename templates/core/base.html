@@ -1,0 +1,237 @@
+<!doctype html>
+{% load static %} {% load cart_template_tag %}
+
+<html lang="en">
+    <head>
+        <meta charset="utf-8" />
+        <meta content="width=device-width, initial-scale=1.0" name="viewport" />
+        <title>{%block title %} {% endblock %}</title>
+        <link href="{% static 'css/style.css' %}" rel="stylesheet" />
+        <!-- Favicons -->
+        <link href="{% static 'img/favicon.png' %}" rel="icon" />
+        <link
+            href="{% static 'img/apple-touch-icon.png' %}"
+            rel="apple-touch-icon"
+        />
+
+        <!-- Google Fonts -->
+        <link
+            href="https://fonts.googleapis.com/css?family=Open+Sans:300,300i,400,400i,600,600i,700,700i|Raleway:300,300i,400,400i,500,500i,600,600i,700,700i|Poppins:300,300i,400,400i,500,500i,600,600i,700,700i"
+            rel="stylesheet"
+        />
+
+        <!-- Vendor CSS Files -->
+        <link href="{% static 'vendor/aos/aos.css' %}" rel="stylesheet" />
+        <link
+            href="{% static 'vendor/bootstrap/css/bootstrap.min.css' %}"
+            rel="stylesheet"
+        />
+        <link
+            href="{% static 'vendor/bootstrap-icons/bootstrap-icons.css' %}"
+            rel="stylesheet"
+        />
+        <link
+            href="{% static 'vendor/boxicons/css/boxicons.min.css' %}"
+            rel="stylesheet"
+        />
+        <link
+            href="{% static 'vendor/glightbox/css/glightbox.min.css' %}"
+            rel="stylesheet"
+        />
+        <link
+            href="{% static 'vendor/remixicon/remixicon.css' %}"
+            rel="stylesheet"
+        />
+        <link
+            href="{% static 'vendor/swiper/swiper-bundle.min.css' %}"
+            rel="stylesheet"
+        />
+
+        <!-- Template Main CSS File -->
+        <link href="{% static 'css/style.css' %}" rel="stylesheet" />
+
+        <!-- Custom CSS for Message Box -->
+        <style>
+            .messages-container {
+                position: fixed;
+                top: 10px;
+                right: 10px;
+                z-index: 1000;
+                width: 300px;
+            }
+
+            .alert {
+                margin-bottom: 10px;
+                display: flex;
+                justify-content: space-between;
+                padding: 15px;
+                border-radius: 8px;
+                box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+                font-family: "Open Sans", sans-serif;
+                transition: transform 0.3s ease-in-out;
+            }
+
+            .alert-info {
+                background-color: #d1ecf1;
+                border-color: #bee5eb;
+                color: #0c5460;
+            }
+
+            .alert-success {
+                background-color: #d4edda;
+                border-color: #c3e6cb;
+                color: #155724;
+            }
+
+            .alert-warning {
+                background-color: #fff3cd;
+                border-color: #ffeeba;
+                color: #856404;
+            }
+
+            .alert-danger {
+                background-color: #f8d7da;
+                border-color: #f5c6cb;
+                color: #721c24;
+            }
+
+            .alert:hover {
+                transform: translateX(10px);
+            }
+
+            .alert .close {
+                background: transparent;
+                border: none;
+                color: inherit;
+                font-size: 20px;
+                cursor: pointer;
+            }
+        </style>
+
+        {% block extra_css %} {% endblock %}
+    </head>
+
+    <body>
+        <!-- ======= Header ======= -->
+        <header id="header" class="fixed-top d-flex align-items-center">
+            <div class="container">
+                <div
+                    class="header-container d-flex align-items-center justify-content-between"
+                >
+                    <div class="logo">
+                        <h1 class="text-light">
+                            <a href="{% url 'index' %}"
+                                ><span>E-commerce</span></a
+                            >
+                        </h1>
+                    </div>
+
+                    <nav id="navbar" class="navbar">
+                        <ul>
+                            {% if user.is_authenticated %}
+                            <li>
+                                <a class="nav-link scrollto active" href="/"
+                                    >Home</a
+                                >
+                            </li>
+                            <li>
+                                <a
+                                    class="nav-link scrollto active"
+                                    href="{% url 'orderlist' %}"
+                                    >Cart&nbsp;&nbsp;
+                                    <div style="color: rgb(20, 9, 121)">
+                                        ({{request.user | cart_item_count }})
+                                    </div>
+                                </a>
+                            </li>
+                            {% if user.is_superuser %}
+                            <li>
+                                <a
+                                    class="nav-link scrollto active"
+                                    href="/manageProducts"
+                                    >Manage Product</a
+                                >
+                            </li>
+                            {% endif %}
+
+                            <li>
+                                <a class="nav-link scrollto active" href="#hero"
+                                    >Welcome {{user.username}}</a
+                                >
+                            </li>
+                            <li>
+                                <a
+                                    class="getstarted scrollto"
+                                    href="{% url 'user_logout' %}"
+                                    >Logout</a
+                                >
+                            </li>
+
+                            {% else %}
+                            <li>
+                                <a
+                                    class="getstarted scrollto"
+                                    href="{% url 'user_login' %}"
+                                    >Login</a
+                                >
+                            </li>
+                            <li>
+                                <a
+                                    class="getstarted scrollto"
+                                    href="{% url 'user_register' %}"
+                                    >Register</a
+                                >
+                            </li>
+                            {% endif %}
+                        </ul>
+                        <i class="bi bi-list mobile-nav-toggle"></i>
+                    </nav>
+                </div>
+            </div>
+        </header>
+        <!-- End Header -->
+
+        <!-- Add this section to display the messages -->
+        {% if messages %}
+        <div class="messages-container">
+            {% for message in messages %}
+            <div class="alert alert-{{ message.tags }}" role="alert">
+                <span>{{ message }}</span>
+                <button
+                    type="button"
+                    class="close"
+                    data-dismiss="alert"
+                    aria-label="Close"
+                >
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            {% endfor %}
+        </div>
+        {% endif %} {% block content %} {% endblock %}
+
+        <script src="{% static 'vendor/bootstrap/js/bootstrap.bundle.min.js' %}"></script>
+
+        <!-- Add this script to automatically remove messages after a few seconds -->
+        <script>
+            document.addEventListener("DOMContentLoaded", function () {
+                const alerts = document.querySelectorAll(".alert");
+                alerts.forEach((alert) => {
+                    setTimeout(() => {
+                        alert.style.opacity = "0";
+                        alert.style.transition = "opacity 0.5s ease-out";
+                        setTimeout(() => {
+                            alert.remove();
+                        }, 500); // Wait for fade-out transition to complete
+                    }, 3000); // The message will disappear after 3 seconds
+                });
+            });
+        </script>
+        <a
+            href="#"
+            class="back-to-top d-flex align-items-center justify-content-center"
+        >
+            <i class="bi bi-arrow-up-short"></i>
+        </a>
+    </body>
+</html>

@@ -1,0 +1,126 @@
+{% extends 'core/product_management_temp.html' %} {% block extra_css %}
+<style>
+    /* Main Section */
+    main {
+        margin-top: 60px; /* Add margin to the left */
+
+        padding: 20px;
+        margin-left: 60px; /* Add margin to the left */
+        margin-right: 60px; /* Add margin to the right */
+    }
+
+    .product-list-wrapper {
+        /* background-color: #f8f9fa; */
+        margin-top: 30px; /* Add margin to the left */
+
+        border-radius: 10px;
+        padding: 20px;
+        /* box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1); */
+    }
+
+    h1 {
+        font-size: 2rem;
+        color: #333;
+        margin-bottom: 20px;
+    }
+
+    /* Message Box */
+    .messages-container {
+        position: absolute;
+        top: 10px;
+        right: 10px;
+        z-index: 1000;
+    }
+
+    .message-box {
+        padding: 10px 20px;
+        margin-bottom: 10px;
+        border-radius: 5px;
+        background-color: #dc3545;
+        color: white;
+        font-size: 1rem;
+        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    }
+
+    /* Product List */
+    .product-list {
+        margin-top: 20px;
+    }
+
+    .product-item {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        background-color: #fff;
+        padding: 15px;
+        margin-bottom: 10px;
+        border-radius: 8px;
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    }
+
+    .product-title {
+        font-size: 1.2rem;
+        font-weight: bold;
+        color: #333;
+    }
+
+    .btn-delete {
+        background: none;
+        border: none;
+        color: #dc3545;
+        font-size: 1.5rem;
+        cursor: pointer;
+        transition: transform 0.2s ease;
+    }
+
+    .btn-delete:hover {
+        transform: scale(1.1);
+    }
+</style>
+{% endblock %} {% block content %}
+<main>
+    <div class="container-fluid">
+        <div class="row main-div">
+            <div class="col-sm-12 product-list-wrapper">
+                <h1 class="text-center">Delete Product</h1>
+
+                {% if messages %}
+                <div class="messages-container">
+                    {% for message in messages %}
+                    <div class="alert alert-success message-box btn-danger">
+                        {{ message }}
+                    </div>
+                    {% endfor %}
+                </div>
+                {% endif %}
+
+                <div class="product-list">
+                    {% for product in products %}
+                    <div class="product-item">
+                        <span class="product-title">
+                            {{ product.name }} - ${{ product.price }}
+                        </span>
+                        <form
+                            method="POST"
+                            action="{% url 'delete_product' product.pk %}"
+                        >
+                            {% csrf_token %}
+                            <button
+                                type="submit"
+                                class="btn-delete"
+                                onclick="return confirm('Are you sure you want to delete this product?');"
+                            >
+                                &#x1F5D1;
+                                <!-- Delete icon -->
+                            </button>
+                        </form>
+                    </div>
+                    {% empty %}
+                    <p>No products available.</p>
+                    {% endfor %}
+                </div>
+            </div>
+        </div>
+    </div>
+</main>
+{% endblock %}
