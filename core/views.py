@@ -3,13 +3,13 @@ from core.forms import CheckoutForm, ProductForm
 from django.contrib import messages
 from core.models import *
 from django.utils import timezone
-from django.conf import settings
+
 from django.shortcuts import get_object_or_404
 from django.http import HttpResponse
-from django.views.decorators.csrf import csrf_exempt
-import razorpay
 
-razorpay_client = razorpay.Client(auth=(settings.RAZORPAY_ID, settings.RAZORPAY_SECRET))
+from django.db.models import Q
+from payment.models import eSewaTransaction, Invoice
+from django.core.paginator import Paginator
 
 # Create your views here.
 def index(request):
@@ -18,10 +18,12 @@ def index(request):
 
 
 def orderlist(request):
+    invoices = Invoice.objects.filter(user_id=request.user.id)
+    print("Invoices:", invoices)
     if Order.objects.filter(user=request.user, ordered=False).exists():
         order = Order.objects.get(user=request.user, ordered=False)
-        return render(request, "core/orderlist.html", {"order": order})
-    return render(request, "core/orderlist.html", {"message": "Your Cart is Empty"})
+        return render(request, "core/orderlist.html", {"order": order, "invoices": invoices})
+    return render(request, "core/orderlist.html", {"message": "Your Cart is Empty", "invoices": invoices})
 
 
 def add_product(request):
@@ -40,10 +42,13 @@ def add_product(request):
         form = ProductForm()
     return render(request, "core/add_product.html", {"form": form})
 
-
 def product_desc(request, pk):
-    product = Product.objects.get(pk=pk)
-    return render(request, "core/product_desc.html", {"product": product})
+    product = get_object_or_404(Product, pk=pk)
+    related_products = Product.objects.filter(category=product.category).exclude(pk=pk)[:8]  # limit to 4 for neat UI
+    return render(request, "core/product_desc.html", {
+        "product": product,
+        "related_products": related_products,
+    })
 
 
 def add_to_cart(request, pk):
@@ -56,7 +61,7 @@ def add_to_cart(request, pk):
         user=request.user,
         ordered=False,
     )
-
+    # print(order_item.)
     # Get Query set of Order Object of Particular User
     order_qs = Order.objects.filter(user=request.user, ordered=False)
     if order_qs.exists():
@@ -65,10 +70,14 @@ def add_to_cart(request, pk):
             order_item.quantity += 1
             order_item.save()
             messages.info(request, "Added Quantity Item")
+            print(order.items.all(), order.user, order.order_id)
+            # print(order_item.order_id)
+
             return redirect("product_desc", pk=pk)
         else:
             order.items.add(order_item)
             messages.info(request, "Item added to Cart")
+            print(order.items.all(), order.user, order.order_id)
             return redirect("product_desc", pk=pk)
 
     else:
@@ -175,159 +184,6 @@ def checkout_page(request):
         return render(request, "core/checkout_address.html", {"form": form})
 
 
-def payment(request):
-    try:
-        order = Order.objects.get(user=request.user, ordered=False)
-        try:
-            address = CheckoutAddress.objects.get(user=request.user)
-            print(address)
-        except:
-            return redirect("checkout_page")
-        order_amount = order.get_total_price()
-        order_currency = "NRS"
-        order_receipt = order.order_id
-        notes = {
-            "street_address": address.street_address,
-            "apartment_address": address.apartment_address,
-            "country": address.country.name,
-            "zip": address.zip_code,
-        }
-
-        # The total amount is passed to eSewa in paise (1 NRS = 100 paise)
-        total_amount_in_paise = int(order_amount * 100)  # Convert amount to paise
-
-        # Send order details to the template
-        return render(
-            request,
-            "core/paymentsummary.html",  # Update this to your eSewa summary page
-            {
-                "order": order,
-                "order_id": order_receipt,  # Use the order receipt (unique identifier)
-                "orderId": order.order_id,
-                "final_price": order_amount,
-                "total_amount": total_amount_in_paise,  # Total amount in paise
-                # "success_url": settings.ESEWA_SUCCESS_URL,  # The success URL
-                # "failure_url": settings.ESEWA_FAILURE_URL,  # The failure URL
-            },
-        )
-
-    except Order.DoesNotExist:
-        print("Order not found")
-        return HttpResponse("404 Error")
-
-def render_pdf_view(request):
-    order_db = Order.objects.get(razorpay_order_id=order_id)
-    checkout_address = CheckoutAddress.objects.get(user=request.user)
-    amount = order_db.get_total_price()
-    amount = amount * 100
-    payment_id = order_db.razorpay_payment_id
-    payment_status = razorpay_client.payment.capture(payment_id, amount)
-    template_path = 'invoice/invoice.html'
-    context = {
-        "order":order_db,"payment_status":payment_status,"checkout_address":checkout_address
-    }
-
-    # Create a Django response object, and specify content_type as pdf
-    response = HttpResponse(content_type='application/pdf')
-    response['Content-Disposition'] = 'attachment; filename="report.pdf"'
-    # find the template and render it.
-    template = get_template(template_path)
-    html = template.render(context)
-
-    # create a pdf
-    pisa_status = pisa.CreatePDF(
-       html, dest=response)
-    # if error then show some funy view
-    if pisa_status.err:
-       return HttpResponse('We had some errors <pre>' + html + '</pre>')
-    return response
-
-# def render_pdf_view(request):
-#     order_id = request.session["order_id"]
-#     order_db = Order.objects.get(razorpay_order_id=order_id)
-#     checkout_address = CheckoutAddress.objects.get(user=request.user)
-#     amount = order_db.get_total_price()
-#     amount = amount * 100
-#     payment_id = order_db.razorpay_payment_id
-#     payment_status = request.session["payment_status"]
-#     template_path = 'invoice/invoice.html'
-#     context = {
-#         "order":order_db,"payment_status":payment_status,"checkout_address":checkout_address
-#     }
-
-#     # Create a Django response object, and specify content_type as pdf
-#     response = HttpResponse(content_type='application/pdf')
-#     response['Content-Disposition'] = 'attachment; filename="report.pdf"'
-#     # find the template and render it.
-#     template = get_template(template_path)
-#     html = template.render(context)
-
-#     # create a pdf
-#     pisa_status = pisa.CreatePDF(
-#        html, dest=response)
-#     # if error then show some funy view
-#     if pisa_status.err:
-#        return HttpResponse('We had some errors <pre>' + html + '</pre>')
-#     return response
-
-@csrf_exempt
-def handlerequest(request):
-    if request.method == "POST":
-        try:
-            payment_id = request.POST.get("razorpay_payment_id", "")
-            order_id = request.POST.get("razorpay_order_id", "")
-            signature = request.POST.get("razorpay_signature", "")
-            print(payment_id, order_id, signature)
-            params_dict = {
-                "razorpay_order_id": order_id,
-                "razorpay_payment_id": payment_id,
-                "razorpay_signature": signature,
-            }
-
-            try:
-                order_db = Order.objects.get(razorpay_order_id=order_id)
-                print("Order Found")
-            except:
-                print("Order Not found")
-                return HttpResponse("505 Not Found")
-            order_db.razorpay_payment_id = payment_id
-            order_db.razorpay_signature = signature
-            order_db.save()
-            print("Working............")
-            result = razorpay_client.utility.verify_payment_signature(params_dict)
-            if result == None:
-                print("Working Final Fine............")
-                amount = order_db.get_total_price()
-                amount = amount * 100  # we have to pass in paisa
-                payment_status = razorpay_client.payment.capture(payment_id, amount)
-                if payment_status is not None:
-                    print(payment_status)
-                    order_db.ordered = True
-                    order_db.save()
-                    print("Payment Success")
-                    checkout_address = CheckoutAddress.objects.get(user=request.user)
-                    request.session[
-                        "order_complete"
-                    ] = "Your Order is Successfully Placed, You will receive your order within 5-7 working days"
-                    return render(request, "invoice/invoice.html",{"order":order_db,"payment_status":payment_status,"checkout_address":checkout_address})
-                else:
-                    print("Payment Failed")
-                    order_db.ordered = False
-                    order_db.save()
-                    request.session[
-                        "order_failed"
-                    ] = "Unfortunately your order could not be placed, try again!"
-                    return redirect("/")
-            else:
-                order_db.ordered = False
-                order_db.save()
-                return render(request, "core/paymentfailed.html")
-        except:
-            return HttpResponse("Error Occured")
-
-
-def invoice(request):
-    return render(request, "invoice/invoice.html")
 
 def manageProducts(request):
     return render(request, "core/manage_products.html")
@@ -396,3 +252,86 @@ def update_product_form(request, pk):
         return redirect('update_product_list')  # Redirect after saving
 
     return render(request, 'core/edit_product.html', {'product': product, 'categories': categories})
+
+
+def all_products(request):
+    categories = Category.objects.filter(product__isnull=False).distinct()  # Get categories with products
+    products = Product.objects.filter(category__in=categories)  # Get products that belong to the selected categories
+
+    return render(request, 'core/products_by_category.html', {'categories': categories, 'products': products})
+
+def all_product(request):
+    search_query = request.GET.get('search', '')
+    category_id = request.GET.get('category', '')
+
+    product_list = Product.objects.all()
+
+    # Filter by search query if provided
+    if search_query:
+        product_list = product_list.filter(
+            Q(name__icontains=search_query) |
+            Q(desc__icontains=search_query)
+        )
+
+    # Filter by category if provided
+    if category_id:
+        product_list = product_list.filter(category_id=category_id)
+
+    paginator = Paginator(product_list, 24)  # Adjust per-page count if needed
+    page_number = request.GET.get('page')
+    products = paginator.get_page(page_number)
+
+    categories = Category.objects.all()
+
+    context = {
+        'products': products,
+        'categories': categories,
+    }
+
+    return render(request, 'core/all_products.html', context)
+def all_products_by_category(request, category_id):
+    category = get_object_or_404(Category, id=category_id)
+    products = Product.objects.filter(category=category)
+    print(products)
+    return render(request, 'core/products_category.html', {'products': products, 'category': category})
+
+
+
+def esewa_success(request):
+    transaction = eSewaTransaction.objects.get(transaction_id=request.GET.get("transaction_id"))
+    user=request.user
+    try:
+        address = CheckoutAddress.objects.get(user=user)
+    except CheckoutAddress.DoesNotExist:
+        address = None
+
+    if transaction.status == 'completed':
+        try:
+            order = Order.objects.get(order_id=request.GET.get("order_id"), ordered=False)
+            # another_order = Order.objects.get(order_id=request.order_id)
+            # print(another_order)
+            order.ordered = True  # Mark order as paid
+            order.save()
+            invoice = Invoice.objects.create(
+                user=user,
+                order_id=order.order_id,
+                order_date=order.start_date,
+                payment_date=order.datetime_ofpayment,
+                transaction_id=transaction.transaction_id,
+                transaction_status=transaction.status,
+                transaction_amount=transaction.amount,
+                payment_type="Credit Card",
+                card_ending="**** 1234",
+                billing_address = address.street_address or '',
+                total_amount=order.get_total_price(),
+            )
+            invoice.save()
+
+            return render(request, "invoice/invoice.html", {"order": order, "transaction": transaction ,"address":address})
+        except Order.DoesNotExist:
+            return HttpResponse("Order not found, but payment was successful!")
+    else:
+        return HttpResponse("Payment verification failed! Please contact support.")
+
+def esewa_failure(request):
+    return render(request, "core/payment_failed.html")

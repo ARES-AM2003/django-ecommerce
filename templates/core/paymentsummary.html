@@ -1,112 +1,217 @@
-<!DOCTYPE html>
-{% load static %}
-{% load cart_template_tag %}
+<!doctype html>
+{% load static %} {% load cart_template_tag %}
 <html lang="en">
+    <head>
+        <meta charset="utf-8" />
+        <meta content="width=device-width, initial-scale=1.0" name="viewport" />
 
-<head>
-    <meta charset="utf-8">
-    <meta content="width=device-width, initial-scale=1.0" name="viewport">
+        <title>Payment</title>
 
-    <title>Payment</title>
+        <link href="{% static 'img/favicon.png' %}" rel="icon" />
+        <link
+            href="{% static 'img/apple-touch-icon.png' %}"
+            rel="apple-touch-icon"
+        />
 
-    <link href="{% static 'img/favicon.png' %}" rel="icon">
-    <link href="{% static 'img/apple-touch-icon.png' %}" rel="apple-touch-icon">
+        <link
+            href="https://fonts.googleapis.com/css?family=Open+Sans:300,300i,400,400i,600,600i,700,700i|Raleway:300,300i,400,400i,500,500i,600,600i,700,700i|Poppins:300,300i,400,400i,500,500i,600,600i,700,700i"
+            rel="stylesheet"
+        />
 
-    <link href="https://fonts.googleapis.com/css?family=Open+Sans:300,300i,400,400i,600,600i,700,700i|Raleway:300,300i,400,400i,500,500i,600,600i,700,700i|Poppins:300,300i,400,400i,500,500i,600,600i,700,700i"
-        rel="stylesheet">
+        <link href="{% static 'vendor/aos/aos.css' %}" rel="stylesheet" />
+        <link
+            href="{% static 'vendor/bootstrap/css/bootstrap.min.css' %}"
+            rel="stylesheet"
+        />
+        <link
+            href="{% static 'vendor/bootstrap-icons/bootstrap-icons.css' %}"
+            rel="stylesheet"
+        />
+        <link
+            href="{% static 'vendor/boxicons/css/boxicons.min.css' %}"
+            rel="stylesheet"
+        />
+        <link
+            href="{% static 'vendor/glightbox/css/glightbox.min.css' %}"
+            rel="stylesheet"
+        />
+        <link
+            href="{% static 'vendor/remixicon/remixicon.css' %}"
+            rel="stylesheet"
+        />
+        <link
+            href="{% static 'vendor/swiper/swiper-bundle.min.css' %}"
+            rel="stylesheet"
+        />
 
-    <link href="{% static 'vendor/aos/aos.css' %}" rel="stylesheet">
-    <link href="{% static 'vendor/bootstrap/css/bootstrap.min.css' %}" rel="stylesheet">
-    <link href="{% static 'vendor/bootstrap-icons/bootstrap-icons.css' %}" rel="stylesheet">
-    <link href="{% static 'vendor/boxicons/css/boxicons.min.css' %}" rel="stylesheet">
-    <link href="{% static 'vendor/glightbox/css/glightbox.min.css' %}" rel="stylesheet">
-    <link href="{% static 'vendor/remixicon/remixicon.css' %}" rel="stylesheet">
-    <link href="{% static 'vendor/swiper/swiper-bundle.min.css' %}" rel="stylesheet">
+        <link href="{% static 'css/style.css' %}" rel="stylesheet" />
+    </head>
 
-    <link href="{% static 'css/style.css' %}" rel="stylesheet">
-</head>
-
-<header id="header" class="fixed-top d-flex align-items-center">
-    <div class="container">
-        <div class="header-container d-flex align-items-center justify-content-between">
-            <div class="logo">
-                <h1 class="text-light"><a href="/"><span>E-commerce</span></a></h1>
-            </div>
-
-            <nav id="navbar" class="navbar">
-                <ul>
-                    {% if user.is_authenticated %}
-                    <li><a class="nav-link scrollto active" href="{% url 'index' %}">Home</a></li>
-                    <li><a class="nav-link scrollto active" href="{% url 'orderlist' %}">Cart&nbsp;&nbsp;
-                            <div style="color:red;">{{request.user | cart_item_count }}</div>
-                        </a></li>
-                    {% if user.is_superuser %}
-                    <li><a class="nav-link scrollto active" href="{% url 'add_product' %}">Add Product</a></li>
-                    {% endif %}
-                    <li><a class="nav-link scrollto active" href="#hero">Welcome {{user.username}}</a></li>
-                    <li><a class="getstarted scrollto" href="{% url 'user_logout' %}">Logout</a></li>
-                    {% else %}
-                    <li><a class="getstarted scrollto" href="{% url 'user_login' %}">Login</a></li>
-                    <li><a class="getstarted scrollto" href="{% url 'user_register' %}">Register</a></li>
-                    {% endif %}
-                </ul>
-                <i class="bi bi-list mobile-nav-toggle"></i>
-            </nav>
-        </div>
-    </div>
-</header>
-
-<main id="main">
-    <section id="breadcrumbs" class="breadcrumbs">
+    <header id="header" class="fixed-top d-flex align-items-center">
         <div class="container">
-            <div class="d-flex justify-content-between align-items-center">
-                <h2>Payment</h2>
-                <ol>
-                    <li><a href="{% url 'index' %}">Home</a></li>
-                    <li>Proceed for Payment</li>
-                </ol>
+            <div
+                class="header-container d-flex align-items-center justify-content-between"
+            >
+                <div class="logo">
+                    <h1 class="text-light">
+                        <a href="/"><span>E-commerce</span></a>
+                    </h1>
+                </div>
+
+                <nav id="navbar" class="navbar">
+                    <ul>
+                        {% if user.is_authenticated %}
+                        <li>
+                            <a
+                                class="nav-link scrollto active"
+                                href="{% url 'index' %}"
+                                >Home</a
+                            >
+                        </li>
+                        <li>
+                            <a
+                                class="nav-link scrollto active"
+                                href="{% url 'orderlist' %}"
+                                >Cart&nbsp;&nbsp;
+                                <div style="color: red">
+                                    {{request.user | cart_item_count }}
+                                </div>
+                            </a>
+                        </li>
+                        {% if user.is_superuser %}
+                        <li>
+                            <a
+                                class="nav-link scrollto active"
+                                href="{% url 'add_product' %}"
+                                >Add Product</a
+                            >
+                        </li>
+                        {% endif %}
+                        <li>
+                            <a class="nav-link scrollto active" href="#hero"
+                                >Welcome {{user.username}}</a
+                            >
+                        </li>
+                        <li>
+                            <a
+                                class="getstarted scrollto"
+                                href="{% url 'user_logout' %}"
+                                >Logout</a
+                            >
+                        </li>
+                        {% else %}
+                        <li>
+                            <a
+                                class="getstarted scrollto"
+                                href="{% url 'user_login' %}"
+                                >Login</a
+                            >
+                        </li>
+                        <li>
+                            <a
+                                class="getstarted scrollto"
+                                href="{% url 'user_register' %}"
+                                >Register</a
+                            >
+                        </li>
+                        {% endif %}
+                    </ul>
+                    <i class="bi bi-list mobile-nav-toggle"></i>
+                </nav>
             </div>
         </div>
-    </section>
+    </header>
 
-    <section id="portfolio-details" class="portfolio-details">
-        <div class="container">
-            {% for message in messages %}
-            <h2 class="text-center">{{message}}</h2>
-            {% endfor %}
-            <div class="row gy-4 justify-content-center">
-                <div class="col-lg-6">
-                    <div class="portfolio-info text-center p-4 rounded shadow-lg">
-                        <h3 class="mb-4">Payment Summary</h3>
-                        <ul class="list-unstyled">
-                            <li class="d-flex justify-content-between">
-                                <strong>Total Amount:</strong> <span>{{final_price}}</span>
-                            </li>
-                        </ul>
-                        <form method="POST" action="https://uat.esewa.com.np/epay/main" class="mt-4">
-                            <input type="hidden" name="amount" value="{{ final_price }}">
-                            <input type="hidden" name="tax_amount" value="0">
-                            <input type="hidden" name="total_amount" value="{{ final_price }}">
-                            <input type="hidden" name="transaction_uuid" value="{{ order_id }}">
-                            <input type="hidden" name="product_code" value="EPAYTEST">
-                            <button type="submit" class="btn btn-primary btn-lg w-100">Pay with eSewa</button>
-                        </form>
+    <main id="main">
+        <section id="breadcrumbs" class="breadcrumbs">
+            <div class="container">
+                <div class="d-flex justify-content-between align-items-center">
+                    <h2>Payment</h2>
+                    <ol>
+                        <li><a href="{% url 'index' %}">Home</a></li>
+                        <li>Proceed for Payment</li>
+                    </ol>
+                </div>
+            </div>
+        </section>
+
+        <section id="portfolio-details" class="portfolio-details">
+            <div class="container">
+                {% for message in messages %}
+                <h2 class="text-center">{{message}}</h2>
+                {% endfor %}
+                <div class="row gy-4 justify-content-center">
+                    <div class="col-lg-6">
+                        <div
+                            class="portfolio-info text-center p-4 rounded shadow-lg"
+                        >
+                            <h3 class="mb-4">Payment Summary</h3>
+                            <ul class="list-unstyled">
+                                <li class="d-flex justify-content-between">
+                                    <strong>Total Amount:</strong>
+                                    <span>{{final_price}}</span>
+                                </li>
+                            </ul>
+
+                            <form
+                                action="{% url 'esewa_payment_process' %}"
+                                method="POST"
+                            >
+                                {% csrf_token %}
+                                <input
+                                    type="hidden"
+                                    name="amt"
+                                    value="{{ final_price }}"
+                                />
+                                <input type="hidden" name="tax_amt" value="0" />
+                                <input
+                                    type="hidden"
+                                    name="total_amt"
+                                    value="{{ final_price }}"
+                                />
+                                <input
+                                    type="hidden"
+                                    name="pid"
+                                    value="{{ order_id }}"
+                                />
+                                <input
+                                    type="hidden"
+                                    name="scd"
+                                    value="{{ merchant_code }}"
+                                />
+                                <input
+                                    type="hidden"
+                                    name="su"
+                                    value="{{ success_url }}"
+                                />
+                                <input
+                                    type="hidden"
+                                    name="fu"
+                                    value="{{ failure_url }}"
+                                />
+                                <input
+                                    type="hidden"
+                                    name="transaction_id"
+                                    value="{{ transaction_id }}"
+                                />
+                                <button type="submit">
+                                    Proceed with Payment
+                                </button>
+                            </form>
+                        </div>
                     </div>
                 </div>
             </div>
-        </div>
-    </section>
-    
-</main>
+        </section>
+    </main>
 
-<script src="{% static 'vendor/aos/aos.js' %}"></script>
-<script src="{% static 'vendor/bootstrap/js/bootstrap.bundle.min.js' %}"></script>
-<script src="{% static 'vendor/glightbox/js/glightbox.min.js' %}"></script>
-<script src="{% static 'vendor/isotope-layout/isotope.pkgd.min.js' %}"></script>
-<script src="{% static 'vendor/php-email-form/validate.js' %}"></script>
-<script src="{% static 'vendor/purecounter/purecounter.js' %}"></script>
-<script src="{% static 'vendor/swiper/swiper-bundle.min.js' %}"></script>
+    <script src="{% static 'vendor/aos/aos.js' %}"></script>
+    <script src="{% static 'vendor/bootstrap/js/bootstrap.bundle.min.js' %}"></script>
+    <script src="{% static 'vendor/glightbox/js/glightbox.min.js' %}"></script>
+    <script src="{% static 'vendor/isotope-layout/isotope.pkgd.min.js' %}"></script>
+    <script src="{% static 'vendor/php-email-form/validate.js' %}"></script>
+    <script src="{% static 'vendor/purecounter/purecounter.js' %}"></script>
+    <script src="{% static 'vendor/swiper/swiper-bundle.min.js' %}"></script>
 
-<script src="{% static 'js/main.js' %}"></script>
-
+    <script src="{% static 'js/main.js' %}"></script>
 </html>

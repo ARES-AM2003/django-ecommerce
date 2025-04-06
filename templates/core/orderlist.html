@@ -1,194 +1,337 @@
-<!DOCTYPE html>
-{% load static %}
-{% load cart_template_tag %}
-<html lang="en">
+{% extends 'core/base.html' %} {% block extra_css %}
+<style>
+  #main {
+    margin-top: 7%;
+    margin-bottom: 10px;
+    display: flex; /* Enable Flexbox layout */
+    max-width: 80%; /* Adjust the max-width as needed */
+    gap: 40px; /* Adjust the gap value as needed */
+    height: 100vh;
+    
+  }
+  #main-container {
+    display: flex;
+    flex-direction: column;
+    /* align-items: center; Optional: centers content horizontally */
+    min-width: 80%;
+    height: 70vh; /* Optional: takes up full viewport height */
+  }
 
-<head>
-  <meta charset="utf-8">
-  <meta content="width=device-width, initial-scale=1.0" name="viewport">
+  .container {
+    display: flex;
+    width: 100%; /* Full width for container */
+  }
 
-  <title>Cart</title>
-  <meta content="" name="description">
-  <meta content="" name="keywords">
+  .sidebar {
+    width: 250px; /* Fixed width for the sidebar */
+    padding: 20px;
+    background-color: #f9fafb;
+    border-radius: 10px;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+    min-width: 300px;
+  }
 
-  <!-- Favicons -->
-  <link href="{% static 'img/favicon.png' %}" rel="icon">
-  <link href="{% static 'img/apple-touch-icon.png' %}" rel="apple-touch-icon">
+  .sidebar h3 {
+    font-size: 1.25rem;
+    font-weight: 600;
+    color: #333;
+    margin-bottom: 15px;
+  }
 
-  <!-- Google Fonts -->
-  <link
-    href="https://fonts.googleapis.com/css?family=Open+Sans:300,300i,400,400i,600,600i,700,700i|Raleway:300,300i,400,400i,500,500i,600,600i,700,700i|Poppins:300,300i,400,400i,500,500i,600,600i,700,700i"
-    rel="stylesheet">
+  .transaction-list {
+  list-style-type: none;
+  padding: 0;
+  margin: 0;
+  font-family: 'Arial', sans-serif;
+  
+}
 
-  <!-- Vendor CSS Files -->
-  <link href="{% static 'vendor/aos/aos.css' %}" rel="stylesheet">
-  <link href="{% static 'vendor/bootstrap/css/bootstrap.min.css' %}" rel="stylesheet">
-  <link href="{% static 'vendor/bootstrap-icons/bootstrap-icons.css' %}" rel="stylesheet">
-  <link href="{% static 'vendor/boxicons/css/boxicons.min.css' %}" rel="stylesheet">
-  <link href="{% static 'vendor/glightbox/css/glightbox.min.css' %}" rel="stylesheet">
-  <link href="{% static 'vendor/remixicon/remixicon.css' %}" rel="stylesheet">
-  <link href="{% static 'vendor/swiper/swiper-bundle.min.css' %}" rel="stylesheet">
+.transaction-list a {
+  display: block;
+  padding: 15px;
+  margin: 10px 0;
+  background-color: #f4f4f9;
+  color: #333;
+  text-decoration: none;
+  border-radius: 8px;
+  transition: background-color 0.3s, transform 0.3s;
+}
 
-  <!-- Template Main CSS File -->
-  <link href="{% static 'css/style.css' %}" rel="stylesheet">
+.transaction-list a:hover {
+  background-color: #007bff;
+  color: white;
+  transform: translateY(-2px);
+}
 
-  <!-- =======================================================
-  * Template Name: Bethany - v4.1.0
-  * Template URL: https://bootstrapmade.com/bethany-free-onepage-bootstrap-theme/
-  * Author: BootstrapMade.com
-  * License: https://bootstrapmade.com/license/
-  ======================================================== -->
-</head>
+.transaction-list a:focus {
+  outline: 2px solid #007bff;
+  outline-offset: 2px;
+}
 
-<body>
+.transaction-list a {
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
 
-  <!-- ======= Header ======= -->
-  <header id="header" class="fixed-top d-flex align-items-center">
-    <div class="container">
-      <div class="header-container d-flex align-items-center justify-content-between">
-        <div class="logo">
-          <h1 class="text-light"><a href="/"><span>E-commerce</span></a></h1>
-          <!-- Uncomment below if you prefer to use an image logo -->
-          <!-- <a href="index.html"><img src="assets/img/logo.png" alt="" class="img-fluid"></a>-->
-        </div>
-
-        <nav id="navbar" class="navbar">
-          <ul>
-            {% if user.is_authenticated %}
-            <li><a class="nav-link scrollto active" href="/">Home</a></li>
-            <li>
-              <a class="nav-link scrollto active" href="{% url 'orderlist' %}">Cart&nbsp;&nbsp;
-            <div style="color:rgb(20, 9, 121);">({{request.user | cart_item_count }})</div>
-            </a></li>
-            {% if user.is_superuser %}
-            <li><a class="nav-link scrollto active" href="manageProducts">Manage Product</a></li>
-            {% endif %}
-
-            <li><a class="nav-link scrollto active" href="#hero">Welcome {{user.username}}</a></li>
-            <li><a class="getstarted scrollto" href="{% url 'user_logout' %}">Logout</a></li>
+.transaction-list a:hover {
+  box-shadow: 0 6px 12px rgba(0, 0, 0, 0.15);
+}
 
 
+  .product-card-container {
+    display: grid;
+    gap: 1.5rem;
+    grid-template-columns: repeat(
+      auto-fill,
+      minmax(250px, 1fr)
+    ); /* Responsive grid */
+    flex: 1; /* Take up remaining width */
+    margin-left: 20px; /* Add some space between sidebar and product grid */
+  }
 
-            {% else %}
-            <li><a class="getstarted scrollto" href="{% url 'user_login' %}">Login</a></li>
-            <li><a class="getstarted scrollto" href="{% url 'user_register' %}">Register</a></li>
-            {% endif %}
-          </ul>
-          <i class="bi bi-list mobile-nav-toggle"></i>
-        </nav><!-- .navbar -->
+  .product-item {
+    background-color: #fff;
+    border-radius: 10px;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+    overflow: hidden;
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+  }
 
-      </div><!-- End Header Container -->
+  .product-item:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.1);
+  }
+
+  .product-item img {
+    width: 100%;
+    height: 200px;
+    object-fit: cover;
+    transition: transform 0.3s ease;
+  }
+
+  .product-item:hover img {
+    transform: scale(1.05); /* Zoom effect on hover */
+  }
+
+  .product-item .p-4 {
+    padding: 20px;
+  }
+
+  .product-item h3 {
+    font-size: 1.1rem;
+    font-weight: 600;
+    color: #333;
+    margin-bottom: 10px;
+  }
+
+  .product-item p {
+    font-size: 0.9rem;
+    color: #777;
+    margin-bottom: 10px;
+    line-height: 1.4;
+  }
+
+  .product-item .price {
+    font-size: 1.2rem;
+    font-weight: 700;
+    color: #2d6a4f;
+  }
+
+  .product-item .view-button {
+    display: inline-block;
+    margin-top: 12px;
+    padding: 10px 20px;
+    background-color: #4299e1;
+    color: white;
+    border-radius: 25px;
+    font-size: 0.9rem;
+    font-weight: 500;
+    transition: background-color 0.3s ease;
+  }
+
+  .product-item .view-button:hover {
+    background-color: #3182ce;
+  }
+
+  .pagination {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 8px;
+    font-size: 0.95rem;
+    padding-top: 20px;
+    margin-bottom: 20px;
+  }
+
+  .pagination a,
+  .pagination span {
+    padding: 10px 15px;
+    text-decoration: none;
+    background-color: #fff;
+    border: 1px solid #ddd;
+    border-radius: 25px;
+    color: #4299e1;
+    transition: background-color 0.3s ease, color 0.3s ease;
+  }
+
+  .pagination a:hover {
+    background-color: #ebf8ff;
+    color: #3182ce;
+  }
+
+  .pagination .active {
+    background-color: #4299e1;
+    color: white;
+    font-weight: 600;
+  }
+
+  .pagination .disabled {
+    color: #e2e8f0;
+    pointer-events: none;
+  }
+
+  .pagination .first-last {
+    font-weight: 600;
+    padding: 10px 20px;
+  }
+
+  .pagination .first-last:hover {
+    background-color: #ebf8ff;
+  }
+
+  .pagination .page-range {
+    font-size: 0.9rem;
+    color: #333;
+    padding: 0 10px;
+  }
+</style>
+{% endblock %} {% block content %}
+<div>
+  <div id="main" class="container mx-auto px-4 py-8">
+    <!-- Sidebar -->
+    <div class="sidebar">
+      <h3>Invoice Transactions</h3>
+      <ul class="transaction-list">
+        {% for invoice in invoices %}
+        <a href="{% url 'invoice_by_id' invoice.transaction_id %}">
+          Transaction ID: {{ invoice.transaction_id }}
+      </a>
+        {% endfor %}
+      </ul>
     </div>
-  </header><!-- End Header -->
 
-  <main id="main">
-
-    <!-- ======= Breadcrumbs ======= -->
-    <section class="breadcrumbs">
-      <div class="container">
-
-        <div class="d-flex justify-content-between align-items-center">
+    <!-- Product Grid -->
+    <main id="main-container">
+      <!-- Breadcrumbs -->
+      <section class="breadcrumbs">
+        <div class="container">
           <h2>Cart Items</h2>
-          <ol>
-            <li><a href="{% url 'index' %}">Home</a></li>
-            <li>Cart Items</li>
-          </ol>
+          <div class="d-flex justify-content-between align-items-center">
+            <ol>
+              <li><a href="{% url 'index' %}">Home</a></li>
+              <li>Cart Items</li>
+            </ol>
+          </div>
         </div>
+      </section>
+      <!-- End Breadcrumbs -->
+      <section class="inner-page">
+        <div class="container">
+          <table class="table">
+            <thead class="thead-dark">
+              <tr>
+                <th scope="col">No</th>
+                <th scope="col">Item Name</th>
+                <th scope="col">Price</th>
+                <th scope="col">Quantity</th>
+                <th scope="col">Total Item Price</th>
+              </tr>
+            </thead>
+            <tbody>
+              {% for order_item in order.items.all %}
+              <tr>
+                <th scope="row">{{ forloop.counter }}</th>
+                <td>{{ order_item.product.name }}</td>
+                <td>Rs. {{ order_item.product.price }}</td>
+                <td>
+                  <a href="{% url 'add_item' order_item.product.pk %}">+</a>
+                  &nbsp; {{ order_item.quantity }} &nbsp;
+                  <a href="{% url 'remove_item' order_item.product.pk %}">-</a>
+                </td>
+                <td>Rs. {{ order_item.get_total_item_price }}</td>
+              </tr>
+              {% empty %}
+              <tr class="row100 body">
+                <td class="cell100 column1">Your Cart is Empty</td>
+                <td colspan="cell100 column1">
+                  <a
+                    href="{% url 'index' %}"
+                    class="btn btn-primary float-right"
+                    >Continue Shopping</a
+                  >
+                </td>
+              </tr>
+              {% endfor %} {% if order.get_total_price %}
+              <tr class="row100 body" style="background-color: #191919">
+                <td class="cell100 column1" style="color: white">
+                  <b>Total Order Price</b>
+                </td>
+                <td class="cell100 column2"></td>
+                <td class="cell100 column3"></td>
+                <td class="cell100 column4"></td>
+                <td class="cell100 column5" style="color: white">
+                  <i class="fas fa-rupee-sign"></i> Rs. {{ order.get_total_price}}
+                </td>
+              </tr>
+              <tr class="row100 body">
+                <td class="cell100 column1">
+                  <a
+                    href="{% url 'payment' %}"
+                    class="btn btn-warning float-right ml-2"
+                    >Checkout</a
+                  >
+                  <a href="/" class="btn btn-primary float-right"
+                    >Continue Shopping</a
+                  >
+                </td>
+              </tr>
+              {% endif %}
+            </tbody>
+          </table>
+        </div>
+      </section>
+    </main>
+    <!-- End #main -->
+  </div>
 
-      </div>
-    </section><!-- End Breadcrumbs -->
-
-    <section class="inner-page">
-      <div class="container">
-        <table class="table">
-          <thead class="thead-dark">
-            <tr>
-              <th scope="col">No</th>
-              <th scope="col">Item Name</th>
-              <th scope="col">Price</th>
-              <th scope="col">Quantity</th>
-              <th scope="col">Total Item Price</th>
-            </tr>
-          </thead>
-          <tbody>
-            {% for order_item in order.items.all %}
-            <tr>
-              <th scope="row">{{forloop.counter}}</th>
-              <td>{{ order_item.product.name }}</td>
-              <td>Rs. {{ order_item.product.price }}</td>
-              <td>
-                <a href="{% url 'add_item' order_item.product.pk %}">+</a> &nbsp;
-                {{ order_item.quantity }} &nbsp;
-                <a href="{% url 'remove_item' order_item.product.pk %}">-</i></a>
-
-              </td>
-              <td>Rs. {{ order_item.get_total_item_price}}</td>
-            </tr>
-            {% empty %}
-            <tr class="row100 body">
-              <td class="cell100 column1">Your Cart is Empty</td>
-              <td colspan="cell100 column1">
-                <a href="{% url 'index' %}" class="btn btn-primary float-right">Continue Shopping</a>
-              </td>
-            </tr>
-            {% endfor %}
-
-
-            {% if order.get_total_price %}
-            <tr class="row100 body" style="background-color:#191919;
-              ">
-              <td class="cell100 column1" style="color:white;"><b>Total Order Price</b></td>
-              <td class="cell100 column2"></td>
-              <td class="cell100 column3"></td>
-              <td class="cell100 column4"></td>
-              <td class="cell100 column5" style="color:white;"><i class="fas fa-rupee-sign"></i> Rs. {{order.get_total_price}}</td>
-            </tr>
-            <tr class="row100 body">
-              <td class="cell100 column1">
-                <a href="{% url 'payment' %}" class="btn btn-warning float-right ml-2">Checkout</a>
-                <a href="/" class="btn btn-primary float-right">Continue Shopping</a>
-              </td>
-            </tr>
-
-            {% endif %}
-
-
-          </tbody>
-        </table>
-      </div>
-    </section>
-
-  </main><!-- End #main -->
-
-
-
-  <a href="#" class="back-to-top d-flex align-items-center justify-content-center"><i
-      class="bi bi-arrow-up-short"></i></a>
-
-  <!-- Vendor JS Files -->
-  <script src="assets/vendor/aos/aos.js"></script>
-  <script src="assets/vendor/bootstrap/js/bootstrap.bundle.min.js"></script>
-  <script src="assets/vendor/glightbox/js/glightbox.min.js"></script>
-  <script src="assets/vendor/isotope-layout/isotope.pkgd.min.js"></script>
-  <script src="assets/vendor/php-email-form/validate.js"></script>
-  <script src="assets/vendor/purecounter/purecounter.js"></script>
-  <script src="assets/vendor/swiper/swiper-bundle.min.js"></script>
-
-  <!-- Template Main JS File -->
-  <script src="assets/js/main.js"></script>
-
-</body>
-
-<!-- Vendor JS Files -->
-<script src="{% static 'vendor/aos/aos.js' %}"></script>
-<script src="{% static 'vendor/bootstrap/js/bootstrap.bundle.min.js' %}"></script>
-<script src="{% static 'vendor/glightbox/js/glightbox.min.js' %}"></script>
-<script src="{% static 'vendor/isotope-layout/isotope.pkgd.min.js' %}"></script>
-<script src="{% static 'vendor/php-email-form/validate.js' %}"></script>
-<script src="{% static 'vendor/purecounter/purecounter.js' %}"></script>
-<script src="{% static 'vendor/swiper/swiper-bundle.min.js' %}"></script>
-
-<!-- Template Main JS File -->
-<script src="{% static 'js/main.js' %}"></script>
-
-</html>
+  <!-- Pagination Controls -->
+  <div class="pagination mt-6">
+    <div class="mt-4 inline-flex items-center">
+      {% if products.has_previous %}
+      <a href="?page=1" class="first-last text-blue-500 hover:text-blue-600"
+        >« First</a
+      >
+      <a
+        href="?page={{ products.previous_page_number }}"
+        class="text-blue-500 hover:text-blue-600"
+        >Previous</a
+      >
+      {% endif %} {% for num in products.paginator.page_range %} {% if num == products.number %}
+      <span class="active">{{ num }}</span>
+      {% else %}
+      <a href="?page={{ num }}">{{ num }}</a>
+      {% endif %} {% endfor %} {% if products.has_next %}
+      <a
+        href="?page={{ products.next_page_number }}"
+        class="text-blue-500 hover:text-blue-600"
+        >Next</a
+      >
+      <a
+        href="?page={{ products.paginator.num_pages }}"
+        class="first-last text-blue-500 hover:text-blue-600"
+        >Last »</a
+      >
+      {% endif %}
+    </div>
+  </div>
+</div>
+{% endblock %}

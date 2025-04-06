@@ -2,6 +2,7 @@ from typing import Reversible
 from django.db import models
 from django.contrib.auth.models import User
 from django_countries.fields import CountryField
+import uuid
 
 # Create your models here.
 
@@ -61,9 +62,7 @@ class Order(models.Model):
     start_date = models.DateTimeField(auto_now_add=True)
     ordered_date = models.DateTimeField()
     ordered = models.BooleanField(default=False)
-    order_id = models.CharField(
-        max_length=100, unique=True, default=None, blank=True, null=True
-    )
+    order_id = models.UUIDField(default=uuid.uuid4, editable=False, unique=True)
     datetime_ofpayment = models.DateTimeField(auto_now_add=True)
     order_delivered = models.BooleanField(default=False)
     order_received = models.BooleanField(default=False)
@@ -73,10 +72,9 @@ class Order(models.Model):
     # razorpay_signature = models.CharField(max_length=500, null=True, blank=True)
 
     def save(self, *args, **kwargs):
-        if self.order_id is None and self.datetime_ofpayment and self.id:
-            self.order_id = self.datetime_ofpayment.strftime("PAY2ME%Y%m%dODR") + str(
-                self.id
-            )
+        # If order_id is not set, assign a new UUID
+        if not self.order_id:
+            self.order_id = uuid.uuid4()
 
         return super().save(*args, **kwargs)
 
@@ -92,7 +90,6 @@ class Order(models.Model):
     def get_total_count(self):
         order = Order.objects.get(pk=self.pk)
         return order.items.count()
-
 
 class CheckoutAddress(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE)

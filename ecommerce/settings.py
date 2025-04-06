@@ -24,8 +24,6 @@ MEDIA_DIR = os.path.join(BASE_DIR, 'media')
 MEDIA_URL = '/media/'
 MEDIA_ROOT = MEDIA_DIR  # Use MEDIA_DIR here
 
-# Quick-start development settings - unsuitable for production
-# See https://docs.djangoproject.com/en/3.2/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
 SECRET_KEY = "django-insecure-p+r28mh==e(rshl-ku@$7(fv!x9r_ja)i*(g_c1+g_zc(lc8ac"
@@ -33,7 +31,7 @@ SECRET_KEY = "django-insecure-p+r28mh==e(rshl-ku@$7(fv!x9r_ja)i*(g_c1+g_zc(lc8ac
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 WHITENOISE_USE_FINDERS = True
-ALLOWED_HOSTS = ['ravindra-ecommerce.herokuapp.com', 'localhost', '127.0.0.1']
+ALLOWED_HOSTS = [ 'localhost', '127.0.0.1']
 
 
 # Application definition
@@ -48,6 +46,7 @@ INSTALLED_APPS = [
     "django.contrib.staticfiles",
     "core",
     "accounts",
+    "payment",
 ]
 
 MIDDLEWARE = [
@@ -86,12 +85,24 @@ WSGI_APPLICATION = "ecommerce.wsgi.application"
 # Database
 # https://docs.djangoproject.com/en/3.2/ref/settings/#databases
 
+# DATABASES = {
+#     "default": {
+#         "ENGINE": "django.db.backends.sqlite3",
+#         "NAME": str(os.path.join(BASE_DIR, "db.sqlite3")),
+#     }
+# }
+
 DATABASES = {
-    "default": {
-        "ENGINE": "django.db.backends.sqlite3",
-        "NAME": str(os.path.join(BASE_DIR, "db.sqlite3")),
+    'default': {
+        'ENGINE': 'django.db.backends.postgresql',
+        'NAME': 'postgres',       # The name of your PostgreSQL database
+        'USER': 'postgres',       # The PostgreSQL username
+        'PASSWORD': 'postgres',  # The PostgreSQL password
+        'HOST': 'localhost',           # Change this if your database is hosted elsewhere
+        'PORT': '5432',               # Default PostgreSQL port
     }
 }
+
 
 
 # Password validation
@@ -150,4 +161,11 @@ RAZORPAY_SECRET = "Enter your Razorpay secret here"
 DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 
 
-django_heroku.settings(locals())
+# django_heroku.settings(locals())
+EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
+EMAIL_HOST = 'smtp.gmail.com'  # Use your email service's SMTP server
+EMAIL_PORT = 587  # Port for TLS, use 465 for SSL
+EMAIL_USE_TLS = True  # Use TLS for encryption
+EMAIL_HOST_USER = 'rochaksulu2002@gmail.com'  # Your email address
+EMAIL_HOST_PASSWORD = 'oibf zeri qcyv yuep '  # Your email password (consider using environment variables for security)
+DEFAULT_FROM_EMAIL = 'rochaksulu2002@gmail.com'  # Default "from" email address

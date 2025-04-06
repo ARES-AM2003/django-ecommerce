@@ -1,0 +1,266 @@
+{% extends 'core/base.html' %} {% block title %}All Products{% endblock %}
+{%block extra_css %}
+<style>
+    /* Main Product Grid */
+    .category-container {
+        margin: 30px 0;
+        padding: 0 15px;
+    }
+
+    .category-title {
+        font-size: 2rem;
+        font-weight: bold;
+        text-align: center;
+        margin-bottom: 20px;
+        color: #333;
+    }
+
+    /* Category Section */
+    .category-section {
+        margin-left: 15%;
+        margin-right: 15%;
+        margin-bottom: 40px;
+        position: relative; /* Required for positioning buttons */
+    }
+
+    /* Product Card Container */
+    .product-card-container {
+        display: flex;
+        overflow-x: auto;
+        padding: 0 50px; /* Adds gap to the left and right */
+        gap: 20px; /* Adds gap between product cards */
+        scroll-behavior: smooth; /* Smooth scroll when clicking buttons */
+    }
+
+    /* Product Card Styling */
+    .product-card {
+        width: 220px;
+        height: 320px;
+        margin-right: 20px; /* Space between cards */
+        border: 1px solid #f4f4f4;
+        border-radius: 12px;
+        overflow: hidden;
+        transition:
+            transform 0.3s ease,
+            box-shadow 0.3s ease;
+        background-color: #fff;
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+        text-align: center;
+        padding: 20px;
+    }
+
+    .product-card:hover {
+        transform: translateY(-10px);
+        box-shadow: 0 8px 20px rgba(0, 0, 0, 0.1);
+    }
+
+    /* Product Image */
+    .product-image {
+        max-height: 250px;
+        object-fit: cover;
+        width: 100%;
+        border-radius: 12px;
+        margin-bottom: 15px;
+    }
+
+    /* Product Info (Title, Price) */
+    .product-info {
+        padding: 10px;
+    }
+
+    .product-name {
+        font-size: 1.2rem;
+        font-weight: bold;
+        margin-top: 10px;
+        color: #333;
+        margin-bottom: 10px;
+    }
+
+    .product-price {
+        font-size: 1.4rem;
+        color: #e74c3c;
+        font-weight: 600;
+        margin: 5px 0;
+    }
+
+    /* Slider Button Styling */
+    .slider-button {
+        position: absolute;
+        top: 50%;
+        transform: translateY(-50%);
+        background-color: transparent; /* Transparent background */
+        color: black; /* Change text/icon color to black */
+        font-size: 22px;
+        border: 2px solid rgba(255, 255, 255, 0.7); /* Light border for contrast */
+        padding: 10px;
+        cursor: pointer;
+        z-index: 10;
+        border-radius: 50%;
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); /* Light shadow for subtle depth */
+        transition:
+            background-color 0.3s ease,
+            transform 0.3s ease,
+            box-shadow 0.3s ease,
+            border-color 0.3s ease,
+            opacity 0.3s ease; /* Added opacity transition */
+        opacity: 0.8;
+    }
+
+    .slider-button:hover {
+        background-color: rgba(
+            255,
+            255,
+            255,
+            0.05
+        ); /* Lighter background for increased transparency */
+        transform: scale(1.1);
+        opacity: 0.5; /* Increased transparency on hover */
+        box-shadow: 0 6px 12px rgba(0, 0, 0, 0.2); /* Stronger shadow on hover */
+        border-color: rgba(255, 255, 255, 0.9); /* Brighten border on hover */
+    }
+
+    .prev-button {
+        left: 15px;
+    }
+
+    .next-button {
+        right: 15px;
+    }
+
+    /* If you are using pseudo-elements to display arrows: */
+    .slider-button::before {
+        color: black; /* Set arrow color to black */
+    }
+
+    .next-button::before {
+        color: black; /* Set arrow color to black */
+    }
+
+    /* Responsive Design */
+    @media (max-width: 991px) {
+        .product-card-container {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 20px;
+        }
+
+        .product-card {
+            width: 45%; /* Adjust width to fit 2 items per row */
+        }
+    }
+
+    @media (max-width: 768px) {
+        .product-card-container {
+            flex-wrap: wrap;
+            justify-content: center;
+        }
+
+        .product-card {
+            width: 100%; /* Full width for mobile screens */
+        }
+    }
+</style>
+{% endblock %} {% block content %}
+<div class="category-container mt-5">
+    <h2 class="category-title">All Products</h2>
+    {% for category in categories %}
+    <div class="category-section">
+        <h3 class="category-title">{{ category.category_name }}</h3>
+
+        <div
+            class="product-card-container"
+            id="product-slider-{{ category.id }}"
+        >
+            {% for product in products %} {% if product.category == category %}
+            <a
+                href="{% url 'product_desc' product.pk %}"
+                class="text-decoration-none"
+            >
+                <div class="product-card">
+                    <img
+                        src="{{ product.img.url|default:'default-image.jpg' }}"
+                        alt="{{ product.name }}"
+                        class="product-image"
+                    />
+                    <div class="product-info">
+                        <h3 class="product-name">{{ product.name }}</h3>
+                        <p class="product-price">
+                            ${{ product.price|floatformat:2 }}
+                        </p>
+                    </div>
+                </div>
+            </a>
+            {% endif %} {% endfor %}
+        </div>
+
+        <!-- Slider Navigation -->
+        <button
+            class="slider-button prev-button"
+            id="prev-button-{{ category.id }}"
+        >
+            &#10094;
+        </button>
+        <button
+            class="slider-button next-button"
+            id="next-button-{{ category.id }}"
+        >
+            &#10095;
+        </button>
+    </div>
+    {% endfor %}
+</div>
+{% endblock %} {% block extra_js %}
+<script>
+    document.addEventListener('DOMContentLoaded', () => {
+        const updateButtonVisibility = (categoryId) => {
+            const slider = document.getElementById(`product-slider-${categoryId}`);
+            const prevButton = document.getElementById(`prev-button-${categoryId}`);
+            const nextButton = document.getElementById(`next-button-${categoryId}`);
+
+            const maxScrollLeft = slider.scrollWidth - slider.clientWidth;
+            const currentScrollLeft = slider.scrollLeft;
+
+            // Show/hide previous button
+            if (currentScrollLeft > 0) {
+                prevButton.style.display = "block";
+            } else {
+                prevButton.style.display = "none";
+            }
+
+            // Show/hide next button
+            if (currentScrollLeft < maxScrollLeft) {
+                nextButton.style.display = "block";
+            } else {
+                nextButton.style.display = "none";
+            }
+        };
+
+        const initializeSlider = (categoryId) => {
+            const prevButton = document.getElementById(`prev-button-${categoryId}`);
+            const nextButton = document.getElementById(`next-button-${categoryId}`);
+            const slider = document.getElementById(`product-slider-${categoryId}`);
+
+            prevButton.addEventListener("click", () => {
+                slider.scrollBy({ left: -220, behavior: "smooth" });
+                updateButtonVisibility(categoryId);
+            });
+
+            nextButton.addEventListener("click", () => {
+                slider.scrollBy({ left: 220, behavior: "smooth" });
+                updateButtonVisibility(categoryId);
+            });
+
+            // Initial check for button visibility
+            updateButtonVisibility(categoryId);
+
+            // Update buttons on window resize (to account for different screen sizes)
+            window.addEventListener("resize", () => updateButtonVisibility(categoryId));
+        };
+
+        // Initialize slider functionality for each category
+        {% for category in categories %}
+            initializeSlider({{ category.id }});
+        {% endfor %}
+    });
+</script>
+{% endblock %}

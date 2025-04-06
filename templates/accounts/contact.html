@@ -1,0 +1,208 @@
+{% extends 'core/base.html' %}
+{% block title %}Contact Us{% endblock %}
+
+{% block extra_css %}
+<style>
+    /* Main contact container with soft background and clean shadow */
+    .contact-container {
+        margin-top: 8%;
+        margin-bottom: 5%;
+        max-width: 600px;
+        margin-left: auto;
+        margin-right: auto;
+        padding: 3rem;
+        background-color: #ffffff;
+        box-shadow: 0 4px 16px rgba(0, 0, 0, 0.1);
+        border-radius: 10px;
+        border: 1px solid #e2e8f0;
+    }
+
+    /* Title styling with professional font */
+    .contact-title {
+        font-size: 2.25rem;
+        font-weight: 600;
+        text-align: center;
+        margin-bottom: 1.5rem;
+        color: #333;
+    }
+
+    /* Description styling for a clean and professional tone */
+    .contact-description {
+        font-size: 1.125rem;
+        text-align: center;
+        color: #555;
+        margin-bottom: 2rem;
+        font-weight: 400;
+    }
+
+    /* Grid layout for the form with improved structure */
+    .contact-form {
+        display: grid;
+        grid-template-columns: 1fr;
+        gap: 1.5rem;
+        align-items: center;
+    }
+
+    /* Label styling */
+    .contact-form label {
+        font-size: 1rem;
+        font-weight: 500;
+        color: #333;
+        margin-bottom: 0.5rem;
+    }
+
+    /* Input and textarea fields with alignment and a clean look */
+    .contact-form input,
+    .contact-form textarea {
+        padding: 1rem;
+        font-size: 1rem;
+        border-radius: 8px;
+        border: 1px solid #ccc;
+        background-color: #f9fafb;
+        color: #333;
+        transition: all 0.3s ease-in-out;
+        width: 100%; /* Ensure inputs and textareas take full width */
+    }
+
+    .contact-form input:focus,
+    .contact-form textarea:focus {
+        border-color: #4b8a8c;
+        outline: none;
+        box-shadow: 0 0 0 2px rgba(75, 138, 140, 0.2);
+    }
+
+    /* Message field spanning both columns */
+    .contact-form textarea {
+        grid-column: span 1; /* Ensure the textarea spans one column */
+    }
+
+    /* Button styling */
+    .contact-form button {
+        background-color: #4b8a8c;
+        color: #ffffff;
+        font-weight: 600;
+        padding: 1rem 2rem;
+        font-size: 1.125rem;
+        border-radius: 25px;
+        cursor: pointer;
+        border: none;
+        transition: background-color 0.3s ease, transform 0.2s ease;
+        text-transform: uppercase;
+        width: 100%;
+    }
+
+    .contact-form button:hover {
+        background-color: #3c7371;
+        transform: scale(1.05);
+    }
+
+    .contact-form button:active {
+        background-color: #2d5b55;
+        transform: scale(1);
+    }
+
+    /* Responsive design for smaller screens */
+    @media (max-width: 768px) {
+        .contact-container {
+            padding: 2rem;
+        }
+
+        .contact-title {
+            font-size: 1.75rem;
+        }
+
+        .contact-description {
+            font-size: 1rem;
+        }
+
+        .contact-form input,
+        .contact-form textarea {
+            font-size: 1rem;
+        }
+
+        .contact-form button {
+            font-size: 1rem;
+        }
+
+        /* Ensure form layout is more compact on small screens */
+        .contact-form {
+            grid-template-columns: 1fr;
+        }
+
+        .contact-form label {
+            text-align: left;
+        }
+
+        .contact-form textarea {
+            grid-column: 1; /* For small screens, keep textarea in one column */
+        }
+    }
+
+    /* Contact information section styling */
+    .contact-info {
+        margin-top: 2rem;
+        text-align: center;
+        font-size: 1rem;
+        color: #555;
+    }
+
+    .contact-info a {
+        color: #4b8a8c;
+        text-decoration: none;
+    }
+
+    .contact-info a:hover {
+        text-decoration: underline;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="container mx-auto py-8 px-4">
+    
+    <div class="contact-container">
+        <h1 class="contact-title">Contact Us</h1>
+        <p class="contact-description">
+            Have any questions or need assistance? Please fill out the form below, and we’ll get back to you promptly.
+        </p>
+
+        <form class="contact-form" action="{% url 'contact' %}" method="POST">
+            {% csrf_token %}
+
+            <div>
+                <label for="name">Your Name</label>
+                <input type="text" id="name" name="name" required />
+            </div>
+
+            <div>
+                <label for="email">Your Email</label>
+                <input type="email" id="email" name="email" required />
+            </div>
+
+            <div>
+                <label for="phone">Your Phone Number</label>
+                <input type="tel" id="phone" name="phone" required />
+            </div>
+
+            <div>
+                <label for="message">Your Message</label>
+                <textarea id="message" name="message" rows="4" required></textarea>
+            </div>
+
+            <!-- "Send Message" button in a third row with full width -->
+            <div class="text-center">
+                <button type="submit">Send Message</button>
+            </div>
+        </form>
+
+        <!-- Contact Information Section -->
+        <div class="contact-info">
+            <p>Alternatively, you can reach us at:</p>
+            <p>
+                <strong>Email:</strong> <a href="mailto:support@bank.com">support@bank.com</a><br>
+                <strong>Phone:</strong> <a href="tel:+9771234567890">+977 1234567890</a>
+            </p>
+        </div>
+    </div>
+</div>
+{% endblock %}

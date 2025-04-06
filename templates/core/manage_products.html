@@ -1,6 +1,24 @@
-{%extends 'core/product_management_temp.html'%} {%block content%}
+{% extends 'core/product_management_temp.html' %} {% block extra_css %}
+<style>
+    /* Footer Section Styles */
+    #footer {
+        /* background-color: #222; */
+        /* color: #fff; */
+        padding: 60px 0 30px;
+        font-size: 14px;
+        margin-top: auto; /* Ensures the footer stays at the bottom */
+    }
 
-<main id="main" class="py-5 main-content">
+    /* Center main content vertically */
+    #main {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        min-height: 70vh; /* Ensures the content takes full screen height */
+    }
+</style>
+{% endblock %} {% block content %}
+<main id="main" class="py-5 content-center">
     <div class="container text-center">
         <h2 class="mb-4">Manage Products</h2>
 
@@ -24,10 +42,7 @@
                     </div>
                     <!-- <div class="row">
                         <div class="col-12">
-                            <a
-                                href="/delete_product"
-                                class="btn btn-danger p-5"
-                            >
+                            <a href="/delete_product" class="btn btn-danger p-5">
                                 Delete Product
                             </a>
                         </div>
@@ -37,5 +52,4 @@
         </div>
     </div>
 </main>
-
-{%endblock%}
+{% endblock %}

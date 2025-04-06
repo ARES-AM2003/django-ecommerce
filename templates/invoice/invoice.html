@@ -1,189 +1,229 @@
-<!DOCTYPE html>
-{% load static %}
-<html>
-  <head>
-    <meta charset="utf-8" />
-    <title>Invoice</title>
-
-    <style>
-      .invoice-box {
-        max-width: 800px;
-        margin: auto;
+{% extends 'core/base.html' %} {% block extra_css %}
+<style>
+    .invoice-container {
+        max-width: 900px;
+        height: auto;
+        margin-top: 5%;
+        margin-left: auto;
+        margin-right: auto;
         padding: 30px;
-        border: 1px solid #eee;
-        box-shadow: 0 0 10px rgba(0, 0, 0, 0.15);
-        font-size: 16px;
-        line-height: 24px;
-        font-family: "Helvetica Neue", "Helvetica", Helvetica, Arial, sans-serif;
-        color: #555;
-      }
+        background: #ffffff;
+        border: 1px solid #e0e0e0;
+        border-radius: 12px;
+        font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+        margin-bottom: 3%;
+    }
 
-      .invoice-box table {
+    .invoice-header {
+        text-align: center;
+        margin-bottom: 40px;
+        position: relative;
+    }
+
+    .invoice-header h1 {
+        font-size: 36px;
+        margin: 0;
+        color: #2c3e50;
+        font-weight: 600;
+    }
+
+    .invoice-header p {
+        font-size: 18px;
+        color: #7f8c8d;
+        margin: 5px 0;
+    }
+
+    /* Logo */
+    .invoice-header .logo {
+        position: absolute;
+        top: 10px;
+        left: 20px;
+        max-width: 150px;
+    }
+
+    .invoice-header .company-info {
+        text-align: right;
+        font-size: 14px;
+        color: #7f8c8d;
+    }
+
+    .invoice-details,
+    .payment-details {
+        margin-bottom: 30px;
+    }
+
+    .invoice-details h3,
+    .payment-details h3 {
+        font-size: 24px;
+        color: #2c3e50;
+        border-bottom: 2px solid #3498db;
+        padding-bottom: 8px;
+        margin-bottom: 20px;
+        font-weight: 600;
+    }
+
+    /* Table Styles */
+    .items-table {
         width: 100%;
-        line-height: inherit;
+        border-collapse: collapse;
+        margin-bottom: 30px;
+    }
+
+    .items-table th,
+    .items-table td {
+        padding: 12px;
         text-align: left;
-      }
+        border-bottom: 1px solid #e0e0e0;
+    }
 
-      .invoice-box table td {
-        padding: 5px;
-        vertical-align: top;
-      }
+    .items-table th {
+        background-color: #3498db;
+        color: white;
+        font-weight: 600;
+        font-size: 16px;
+    }
 
-      .invoice-box table tr td:nth-child(2) {
-        text-align: right;
-      }
+    .items-table td {
+        background-color: #f9f9f9;
+        color: #7f8c8d;
+        font-size: 14px;
+    }
 
-      .invoice-box table tr.top table td {
-        padding-bottom: 20px;
-      }
+    .items-table tr:nth-child(even) td {
+        background-color: #f2f2f2;
+    }
 
-      .invoice-box table tr.top table td.title {
-        font-size: 45px;
-        line-height: 45px;
-        color: #333;
-      }
+    .total-amount {
+        font-size: 20px;
+        font-weight: 700;
+        color: #27ae60;
+        border-top: 2px solid #bdc3c7;
+        padding-top: 12px;
+        text-align: center;
+        margin-top: 20px;
+    }
 
-      .invoice-box table tr.information table td {
-        padding-bottom: 40px;
-      }
+    .footer {
+        text-align: center;
+        margin-top: 40px;
+        font-size: 14px;
+        color: #95a5a6;
+    }
 
-      .invoice-box table tr.heading td {
-        background: #eee;
-        border-bottom: 1px solid #ddd;
-        font-weight: bold;
-      }
+    .footer a {
+        color: #3498db;
+        text-decoration: none;
+        font-weight: 600;
+    }
 
-      .invoice-box table tr.details td {
-        padding-bottom: 20px;
-      }
+    .footer a:hover {
+        color: #2980b9;
+    }
 
-      .invoice-box table tr.item td {
-        border-bottom: 1px solid #eee;
-      }
+    /* Payment Method Section */
+    .payment-method {
+        background-color: #f1f1f1;
+        padding: 15px;
+        border-radius: 8px;
+        margin-top: 20px;
+    }
 
-      .invoice-box table tr.item.last td {
-        border-bottom: none;
-      }
+    .payment-method h3 {
+        font-size: 20px;
+        color: #34495e;
+        margin-bottom: 15px;
+    }
 
-      .invoice-box table tr.total td:nth-child(2) {
-        border-top: 2px solid #eee;
-        font-weight: bold;
-      }
+    .payment-method ul {
+        padding: 0;
+        list-style: none;
+        font-size: 14px;
+        color: #7f8c8d;
+    }
 
-      @media only screen and (max-width: 600px) {
-        .invoice-box table tr.top table td {
-          width: 100%;
-          display: block;
-          text-align: center;
-        }
+    .payment-method ul li {
+        margin-bottom: 10px;
+    }
 
-        .invoice-box table tr.information table td {
-          width: 100%;
-          display: block;
-          text-align: center;
-        }
-      }
-
-      /** RTL **/
-      .invoice-box.rtl {
-        direction: rtl;
-        font-family: Tahoma, "Helvetica Neue", "Helvetica", Helvetica, Arial,
-          sans-serif;
-      }
-
-      .invoice-box.rtl table {
-        text-align: right;
-      }
-
-      .invoice-box.rtl table tr td:nth-child(2) {
-        text-align: left;
-      }
-    </style>
-  </head>
-
-  <body>
-    <div class="invoice-box">
-      <table cellpadding="0" cellspacing="0">
-        <tr class="top">
-          <td colspan="2">
-            <table>
-              <tr>
-                <td class="title">
-                  <img
-                    src="../{% static 'img/coding-katta.png' %}"
-                    style="width: 100%; max-width: 300px"
-                  />
-                </td>
-
-                <td>
-                  Invoice Id: {{payment_status.order_id}}<br />
-                  Date: {{order.ordered_date}}<br />
-                </td>
-              </tr>
-            </table>
-          </td>
-        </tr>
-
-        <tr class="information">
-          <td colspan="2">
-            <table>
-              <tr>
-                <td>
-                  Coding Katta<br />
-                  Shalini Palace, Kolhapur<br />
-                  Maharashtra, India<br />
-                </td>
-
-                <td>
-                  {{order.user.username}}<br />
-                  {{checkout_address.street_address}}
-                  {{checkout_address.apartment_address}}<br />
-                  {{checkout_address.country}} {{checkout_address.zip_code}}<br />
-                  {{payment_status.contact}}
-                </td>
-              </tr>
-            </table>
-          </td>
-        </tr>
-
-        <tr class="heading">
-          <td>Payment Method</td>
-
-          <td>Check #</td>
-        </tr>
-
-        <tr class="details">
-          <td>{{payment_status.method}}</td>
-
-          <td>{{payment_status.id}}</td>
-        </tr>
-
-        <tr class="heading">
-          <td>Item (Count)</td>
-          <td>Price</td>
-        </tr>
-
-        {% for item in order.items.all%}
-        <tr class="item">
-          <td>{{item.product.name}} ({{item.quantity}})</td>
-          <td>Rs.{{item.get_total_item_price}}</td>
-        </tr>
-        {% endfor %}
-
-        <tr class="total">
-          <td></td>
-
-          <td>Total: Rs. {{order.get_total_price}}</td>
-        </tr>
-      </table>
+    .payment-method ul li span {
+        font-weight: 600;
+        color: #34495e;
+    }
+</style>
+{% endblock %} {% block content %}
+<div class="invoice-container">
+    <div class="invoice-header">
+        <!-- Company Logo -->
+        <img src="path/to/logo.png" alt="Company Logo" class="logo" />
+        <h1>Invoice</h1>
+        <p>Order ID: {{ order.order_id }}</p>
+        <p>Order Date: {{ order.start_date }}</p>
+        <p>Payment Date: {{ order.datetime_ofpayment }}</p>
+        <div class="company-info">
+            <p>Company Name</p>
+            <p>1234 E-commerce St, City, Country</p>
+            <p>Phone: +123 456 7890</p>
+            <p>Email: support@example.com</p>
+        </div>
     </div>
 
-    <div style="text-align: center"><button>Print</button></div>
-  </body>
+    <div class="invoice-details">
+        <h3>Items:</h3>
+        <table class="items-table">
+            <thead>
+                <tr>
+                    <th>Product Name</th>
+                    <th>Quantity</th>
+                    <th>Price (NPR)</th>
+                    <th>Subtotal (NPR)</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for item in order.items.all %}
+                <tr>
+                    <td>{{ item.product.name }}</td>
+                    <td>{{ item.quantity }}</td>
+                    <td>{{ item.product.price }}</td>
+                    <td>{{ item.get_final_price }}</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
 
-  <script>
-    document.querySelector("button").addEventListener("click", function () {
-      window.print();
-    });
-  </script>
-</html>
+    <div class="payment-details">
+        <h3>Payment Information:</h3>
+        <ul>
+            <li>
+                <span>Transaction ID:</span> {{ transaction.transaction_id }}
+            </li>
+            <li><span>Status:</span> {{ transaction.status }}</li>
+            <li><span>Amount:</span> NPR {{ transaction.amount }}</li>
+        </ul>
+    </div>
+
+    <div class="payment-method">
+        <h3>Payment Method:</h3>
+        <ul>
+            <li><span>Payment Type:</span> Credit Card</li>
+            <li><span>Card Ending:</span> **** 1234</li>
+            <li>
+                <span>Billing Address:</span>
+                {{address.street_address}}
+            </li>
+        </ul>
+    </div>
+
+    <div class="total-amount">
+        <p>Total Amount: NPR {{ order.get_total_price }}</p>
+    </div>
+
+    <div class="footer">
+        <p>
+            Thank you for your purchase! If you have any questions, feel free to
+            <a href="mailto:support@example.com">contact us</a>.
+        </p>
+    </div>
+</div>
+{% endblock %}
