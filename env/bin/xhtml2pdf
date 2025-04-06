@@ -1,4 +1,4 @@
-#!/home/ares-am/Desktop/project/django-ecommerce/env/bin/python
+#!/home/ares-am/Desktop/project/django-ecommerce/env/bin/python3
 # EASY-INSTALL-ENTRY-SCRIPT: 'xhtml2pdf==0.2.5','console_scripts','xhtml2pdf'
 import re
 import sys
