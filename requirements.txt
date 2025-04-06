@@ -11,6 +11,7 @@ dj-static==0.0.6
 Django==3.2
 django-countries==7.2.1
 django-heroku==0.3.1
+dotenv==1.1.0
 future==0.18.2
 gunicorn==20.1.0
 html5lib==1.1
