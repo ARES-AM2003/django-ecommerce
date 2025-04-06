@@ -12,7 +12,11 @@ https://docs.djangoproject.com/en/3.2/ref/settings/
 
 from pathlib import Path
 import os
-import django_heroku
+from dotenv import load_dotenv
+load_dotenv()
+
+ENVIRONMENT = os.getenv('ENVIRONMENT', 'development')  # Default to 'development' if not set
+
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -31,8 +35,10 @@ SECRET_KEY = "django-insecure-p+r28mh==e(rshl-ku@$7(fv!x9r_ja)i*(g_c1+g_zc(lc8ac
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 WHITENOISE_USE_FINDERS = True
-ALLOWED_HOSTS = [ 'localhost', '127.0.0.1']
+ALLOWED_HOSTS = [ 'localhost', '127.0.0.1','django-ecommerce-production-1996.up.railway.app']
 
+
+CSRF_TRUSTED_ORIGINS = ['https://django-ecommerce-production-1996.up.railway.app']
 
 # Application definition
 
@@ -103,6 +109,10 @@ DATABASES = {
     }
 }
 
+import dj_database_url
+POSTGRES_LOCALLY = False
+if ENVIRONMENT == "production" or POSTGRES_LOCALLY==True:
+    DATABASES["default"] = dj_database_url.parse(os.getenv("DATABASE_URL"))
 
 
 # Password validation
@@ -150,8 +160,6 @@ STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
 MEDIA_ROOT = MEDIA_DIR
 MEDIA_URL = '/media/'
 
-RAZORPAY_ID = "Enter your Razorpay id here"
-RAZORPAY_SECRET = "Enter your Razorpay secret here"
 
 
 # Default primary key field type
