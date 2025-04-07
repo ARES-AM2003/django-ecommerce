@@ -98,22 +98,35 @@ WSGI_APPLICATION = "ecommerce.wsgi.application"
 #     }
 # }
 
-DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.postgresql',
-        'NAME': 'postgres',       # The name of your PostgreSQL database
-        'USER': 'postgres',       # The PostgreSQL username
-        'PASSWORD': 'postgres',  # The PostgreSQL password
-        'HOST': 'localhost',           # Change this if your database is hosted elsewhere
-        'PORT': '5432',               # Default PostgreSQL port
-    }
-}
+# DATABASES = {
+#     'default': {
+#         'ENGINE': 'django.db.backends.postgresql',
+#         'NAME': 'postgres',       # The name of your PostgreSQL database
+#         'USER': 'postgres',       # The PostgreSQL username
+#         'PASSWORD': 'postgres',  # The PostgreSQL password
+#         'HOST': 'localhost',           # Change this if your database is hosted elsewhere
+#         'PORT': '5432',               # Default PostgreSQL port
+#     }
+# }
 
 import dj_database_url
-POSTGRES_LOCALLY = False
-if ENVIRONMENT == "production" or POSTGRES_LOCALLY==True:
-    DATABASES["default"] = dj_database_url.parse(os.getenv("DATABASE_URL"))
 
+DATABASES = {}
+
+if os.getenv("DATABASE_URL"):
+    DATABASES["default"] = dj_database_url.config(
+        default=os.getenv("DATABASE_URL"),
+        conn_max_age=600,
+        ssl_require=True
+    )
+else:
+    # Fallback to SQLite for development
+    DATABASES = {
+        "default": {
+            "ENGINE": "django.db.backends.sqlite3",
+            "NAME": os.path.join(BASE_DIR, "db.sqlite3"),
+        }
+    }
 
 # Password validation
 # https://docs.djangoproject.com/en/3.2/ref/settings/#auth-password-validators
