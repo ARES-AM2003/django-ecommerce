@@ -40,8 +40,8 @@ def payment(request):
                 'orderId': order.order_id,
                 'final_price': order_amount,
                 'total_amount': int(order_amount * 100),  # Total amount in paise
-                'success_url': 'http://127.0.0.1:8000/esewa/success/',
-                'failure_url': 'http://127.0.0.1:8000/esewa/failure/',
+                'success_url': 'http://django-ecommerce-138p.onrender.com/esewa/success/',
+                'failure_url': 'http://django-ecommerce-138p.onrender.com/esewa/failure/',
                 'transaction_id': transaction_id,  # Pass the transaction ID to the form
             }
 
